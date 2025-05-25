@@ -1,0 +1,519 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overscroll-behavior-x: none;
+        overscroll-behavior-y: none;
+      }
+      #form {
+        margin: 10px 10px 0 10px;
+        padding: 5px 5px 0 5px;
+        border: solid 1px #aaaaaa;
+        box-sizing: border-box;
+      }
+      #form .row {
+        display: grid;
+        grid-template-columns: 10% 15% 10% 1fr;
+        list-style: none;
+        margin: 0 0 5px 0;
+        padding: 0;
+      }
+      #form .row .input {
+        width: 50px;
+      }
+      #form .submit-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0 5px 0;
+        padding-top: 5px;
+        border-top: solid 1px #dddddd;
+      }
+      #form .submit-row button {
+        margin: 0 5px;
+      }
+      #standing-circle-circumference-meter,
+      #roling-circle-circumference-meter,
+      #focal-length-meter {
+        position: relative;
+        height: 24px;
+      }
+      #standing-circle-circumference-meter::before,
+      #roling-circle-circumference-meter::before,
+      #focal-length-meter::before {
+        content: "";
+        position: absolute;
+        display: block;
+        width: 100%;
+        height: 1px;
+        top: 50%;
+        border-top: solid 1px #aaaaaa;
+      }
+      #standing-circle-circumference-meter-handle,
+      #roling-circle-circumference-meter-handle,
+      #focal-length-meter-handle {
+        position: absolute;
+        top: 0;
+        width: 10px;
+        height: calc(100% - 2px);
+        border: solid 1px #888888;
+        background-color: #ffffff;
+      }
+      #display-wrapper {
+        position: relative;
+        margin: 10px 0 0 10px;
+        border: solid 1px #aaaaaa;
+      }
+      #display,
+      #auxiliary-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      #counter {
+        position: relative;
+        box-sizing: border-box;
+        margin-left: 10px;
+        height: 30px;
+        padding: 0;
+        border-right: solid 1px #aaaaaa;
+        border-bottom: solid 1px #aaaaaa;
+        border-left: solid 1px #aaaaaa;
+      }
+      #announcer {
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        height: 29px;
+        line-height: 29px;
+        padding: 0 5px;
+        text-align: right;
+      }
+      #gauge {
+        position: absolute;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form">
+      <div class="row">
+        <div>静止円</div>
+        <div>：<input type="text" class="input" id="standing-circle-circumference" /></div>
+        <div><button id="standing-circle-circumference-submit">指定</button></div>
+        <div id="standing-circle-circumference-meter">
+          <div id="standing-circle-circumference-meter-handle"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div>回転円</div>
+        <div>：<input type="text" class="input" id="roling-circle-circumference" /></div>
+        <div><button id="roling-circle-circumference-submit">指定</button></div>
+        <div id="roling-circle-circumference-meter">
+          <div id="roling-circle-circumference-meter-handle"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div>描画点</div>
+        <div>：<input type="text" class="input" id="focal-length" /></div>
+        <div><button id="focal-length-submit">指定</button></div>
+        <div id="focal-length-meter">
+          <div id="focal-length-meter-handle"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div>線の色</div>
+        <div>：
+          <input id="color" type="color" value="#ff8888" /></div>
+          <div></div>
+          <div></div>
+      </div>
+      <div class="submit-row">
+        <button id="execute">描画開始</button>
+        <button id="pause">停止</button>
+        <button id="delete">削除</button>
+      </div>
+    </form>
+    <div id="display-wrapper">
+      <canvas id="auxiliary">
+      </canvas>
+      <canvas id="display">
+      </canvas>
+    </div>
+    <div id="counter">
+      <canvas id="gauge"></canvas>
+      <div id="announcer"></div>
+    </div>
+    <script>
+      const baseCircleRadius = 200;
+      const baseCircleCircumference = 600;
+      const displaySize = 500;
+      const displayRadius = displaySize / 2;
+      const gaugeHeight = 29;
+
+      const displayWrapper = document.getElementById("display-wrapper");
+      const display = document.getElementById("display");
+      const auxiliary = document.getElementById("auxiliary");
+      const form = document.getElementById("form");
+      const displayContext = display.getContext("2d");
+      const auxiliaryContext = auxiliary.getContext("2d");
+      const meterElements = ["standing-circle-circumference", "roling-circle-circumference", "focal-length"].reduce((elements, meterType) => ({
+        ...elements, [meterType]: {
+          input: document.getElementById(`${meterType}`),
+          meter: document.getElementById(`${meterType}-meter`),
+          handle: document.getElementById(`${meterType}-meter-handle`),
+          submit: document.getElementById(`${meterType}-submit`),
+        },
+      }), {});
+      const colorInput = document.getElementById("color");
+      const executeButton = document.getElementById("execute");
+      const pauseButton = document.getElementById("pause");
+      const deleteButton = document.getElementById("delete");
+      const counterAnnouncer = document.getElementById("announcer");
+      const counterGauge = document.getElementById("gauge");
+      const counterGaugeContext = counterGauge.getContext("2d");
+      displayWrapper.style.width = `${displaySize}px`;
+      displayWrapper.style.height = `${displaySize}px`;
+      counterGauge.style.width = `${displaySize}px`;
+      form.style.width = `${displaySize + 2}px`;
+      counter.style.width = `${displaySize + 2}px`;
+      display.setAttribute("width", displaySize);
+      display.setAttribute("height", displaySize);
+      auxiliary.setAttribute("width", displaySize);
+      auxiliary.setAttribute("height", displaySize);
+      counterGauge.setAttribute("width", displaySize);
+      counterGauge.setAttribute("height", gaugeHeight);
+      counterGaugeContext.fillStyle = "#66cc66";
+
+      let standingCircleCircumference = baseCircleCircumference;
+      let standingCircleRadius= baseCircleRadius;
+      let rolingCircleCircumference = 350;
+      let rolingCircleRadius = baseCircleRadius * rolingCircleCircumference / baseCircleCircumference;
+      let focalLengthPercentage = 0.5;
+      let meterHandleDiffX = 0;
+      let meterSwitch = false;
+      let animationSwitch = false;
+      let animation = null;
+      let startedSwitch = false;
+      let latestX = 0;
+      let latestY = 0;
+      let timer = 0;
+      let timerMultiple = 1;
+      let strokeColor = colorInput.value;
+
+      const output = () => {
+        const baseL = standingCircleRadius * 2 * Math.PI / standingCircleCircumference * timer; // 進行距離
+        const baseT = Math.PI * 2 / standingCircleCircumference * timer; // 枠円上の角度
+        const AX = Math.sin(baseT) * (standingCircleRadius - rolingCircleRadius); // 回転円のX座標
+        const AY = Math.cos(baseT) * (standingCircleRadius - rolingCircleRadius); // 回転円のY座標
+        const AT = Math.PI * 2 / rolingCircleCircumference * timer; // 回転円の相対角度
+        const X = AX + Math.sin(baseT - AT) * rolingCircleRadius * focalLengthPercentage; // 回転円のX座標
+        const Y = AY + Math.cos(baseT - AT) * rolingCircleRadius * focalLengthPercentage; // 回転円のY座標
+
+        if (timer > 0) {
+          displayContext.setTransform(1, 0, 0, 1, 0, 0);
+          displayContext.beginPath();
+          displayContext.moveTo(displayRadius - latestX, displayRadius - latestY);
+          displayContext.lineTo(displayRadius - X, displayRadius - Y);
+          displayContext.closePath();
+          displayContext.strokeStyle = strokeColor;
+          displayContext.stroke();
+        }
+
+        auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
+        auxiliaryContext.clearRect(0, 0, displaySize, displaySize);
+        auxiliaryContext.strokeStyle = '#dddddd';
+        auxiliaryContext.beginPath();
+        auxiliaryContext.arc(displayRadius - 0.5, displayRadius - 0.5, standingCircleRadius, 0, Math.PI * 2);
+        auxiliaryContext.stroke();
+        auxiliaryContext.beginPath();
+        auxiliaryContext.moveTo(displayRadius, displayRadius);
+        auxiliaryContext.lineTo(displayRadius - Math.sin(baseT) * standingCircleRadius, displayRadius - Math.cos(baseT) * standingCircleRadius);
+        auxiliaryContext.closePath();
+        auxiliaryContext.stroke();
+        auxiliaryContext.strokeStyle = '#ddddff';
+        auxiliaryContext.beginPath();
+        auxiliaryContext.arc(displayRadius - AX, displayRadius - AY, rolingCircleRadius , 0, Math.PI * 2);
+        auxiliaryContext.closePath();
+        auxiliaryContext.stroke();
+        Array(8).fill(null).forEach((_, i) => {
+          const ART = baseT - AT + Math.PI * 2 / 8 * (i + 0.5);
+          const ARL = rolingCircleRadius * 7 / 10;
+          auxiliaryContext.beginPath();
+          auxiliaryContext.arc(displayRadius - AX + Math.sin(ART) * ARL, displayRadius - AY + Math.cos(ART) * ARL, rolingCircleRadius * 0.1, 0, Math.PI * 2);
+          auxiliaryContext.closePath();
+          auxiliaryContext.stroke();
+        });
+        auxiliaryContext.strokeStyle = '#ccccff';
+        auxiliaryContext.beginPath();
+        auxiliaryContext.moveTo(displayRadius - AX, displayRadius - AY);
+        auxiliaryContext.lineTo(displayRadius - X, displayRadius - Y);
+        auxiliaryContext.closePath();
+        auxiliaryContext.stroke();
+
+        latestX = X;
+        latestY = Y;
+      };
+
+      const animate = () => {
+        output();
+        timer ++;
+        counterGaugeContext.setTransform(1, 0, 0, 1, 0, 0);
+        counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        counterGaugeContext.fillRect(0, 0, displaySize * timer / timerMultiple, gaugeHeight);
+        if (!(timer % standingCircleCircumference)) {
+          counterAnnouncer.innerText = `${timer / standingCircleCircumference} / ${timerMultiple / standingCircleCircumference}周`;
+        }
+        if (timer <= timerMultiple) {
+          if (animationSwitch) animation = setTimeout(animate, 5);
+        } else {
+          endExecution();
+        }
+      };
+
+      const startAnimation = () => {
+        if (animation) clearInterval(animation);
+        animationSwitch = true;
+        animate();
+      };
+
+      const stopAnimation = () => {
+        if (animation) clearTimeout(animation);
+        animationSwitch = false;
+      };
+
+      const getMeterParams = (meterType) => {
+        const meterRect = meterElements[meterType].meter.getBoundingClientRect();
+        const meterHandleRect = meterElements[meterType].handle.getBoundingClientRect();
+
+        return {
+          left: meterRect.left + meterHandleRect.width / 2,
+          right: meterRect.left + meterRect.width - meterHandleRect.width / 2,
+        };
+      };
+
+      const setMeterPosition = (meterType, percentage) => {
+        if (animationSwitch) return;
+
+        const { left, right } = getMeterParams(meterType);
+        meterElements[meterType].handle.style.left = `${Math.floor((right - left) * percentage)}px`;
+      };
+
+      const setMeterSwitch = (operate, clientX) => {
+        if (animationSwitch) return;
+        meterSwitch = operate;
+        if (operate === false) return;
+        const meterHandleRect = meterElements[operate].handle.getBoundingClientRect();
+        if (clientX >= meterHandleRect.left && clientX <= meterHandleRect.left + meterHandleRect.width) {
+          meterHandleDiffX = clientX - (meterHandleRect.left + meterHandleRect.width / 2);
+        } else {
+          meterHandleDiffX = 0;
+          setMeterLength(operate, clientX);
+        }
+      };
+
+      const setMeterPercentage = (meterType, percentage) => {
+        if (animationSwitch) return;
+        if (percentage < 0) percentage = 0;
+        if (percentage > 1) percentage = 1;
+        percentage = Math.floor(percentage * 100) / 100;
+        setMeterPosition(meterType, percentage);
+        switch (meterType) {
+          case "standing-circle-circumference":
+            standingCircleCircumference = Math.floor(baseCircleCircumference / 10 + percentage * (baseCircleCircumference - baseCircleCircumference / 10));
+            standingCircleRadius = baseCircleRadius * standingCircleCircumference / baseCircleCircumference;
+            setTimerMultiple();
+            meterElements[meterType].input.value = standingCircleCircumference;
+            break;
+          case "roling-circle-circumference":
+            rolingCircleCircumference = Math.floor(baseCircleCircumference / 10 + percentage * (baseCircleCircumference - baseCircleCircumference / 10));
+            rolingCircleRadius = baseCircleRadius * rolingCircleCircumference / baseCircleCircumference;
+            setTimerMultiple();
+            meterElements[meterType].input.value = rolingCircleCircumference;
+            break;
+          case "focal-length":
+            focalLengthPercentage = percentage;
+            meterElements[meterType].input.value = percentage * 100;
+            break;
+          default:
+        }
+        output();
+      };
+
+      const setMeterLength = (meterType, clientX) => {
+        if (animationSwitch) return;
+        const { left, right } = getMeterParams(meterType);
+        const percentage = (clientX - meterHandleDiffX - left) / (right - left);
+        setMeterPercentage(meterType, percentage);
+      };
+
+      const submitMeter = (meterType) => {
+        if (animationSwitch) return;
+        const inputValue = parseInt(meterElements[meterType].input.value);
+        switch (meterType) {
+          case "standing-circle-circumference":
+            standingCircleCircumference = inputValue;
+            if (standingCircleCircumference < baseCircleCircumference / 10) standingCircleCircumference = baseCircleCircumference / 10;
+            if (standingCircleCircumference > baseCircleCircumference) standingCircleCircumference = baseCircleCircumference;
+            setMeterPosition(meterType, (standingCircleCircumference - baseCircleCircumference / 10) / (baseCircleCircumference - baseCircleCircumference / 10));
+            standingCircleRadius = baseCircleRadius * standingCircleCircumference / baseCircleCircumference;
+            meterElements[meterType].input.value = standingCircleCircumference;
+            setTimerMultiple();
+            output();
+            break;
+          case "roling-circle-circumference":
+            rolingCircleCircumference = inputValue;
+            if (rolingCircleCircumference < baseCircleCircumference / 10) rolingCircleCircumference = baseCircleCircumference / 10;
+            if (rolingCircleCircumference > baseCircleCircumference) rolingCircleCircumference = baseCircleCircumference;
+            setMeterPosition(meterType, (rolingCircleCircumference - baseCircleCircumference / 10) / (baseCircleCircumference - baseCircleCircumference / 10));
+            rolingCircleRadius = baseCircleRadius * rolingCircleCircumference / baseCircleCircumference;
+            meterElements[meterType].input.value = rolingCircleCircumference;
+            setTimerMultiple();
+            output();
+            break;
+          case "focal-length":
+            setMeterPercentage(meterType, inputValue / 100);
+            break;
+          default:
+        }
+      };
+
+      const getClientPosition = (event) => ({
+        X: event.clientX !== undefined ? event.clientX : event.changedTouches[0].clientX,
+        Y: event.clientY !== undefined ? event.clientY : event.changedTouches[0].clientY,
+      });
+
+      const setTimerMultiple = () => {
+        const minL = Math.min(standingCircleCircumference, rolingCircleCircumference);
+        const maxL = Math.max(standingCircleCircumference, rolingCircleCircumference);
+        const divisor = Array(minL).fill(null).map((_, i) => minL - i).find((i) => minL % i === 0 && maxL % i === 0);
+        timerMultiple = minL * maxL / divisor;
+        counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        counterAnnouncer.innerText = `/ ${timerMultiple / standingCircleCircumference}周`;
+      }
+
+      const startExecution = () => {
+        startedSwitch = true;
+        startAnimation();
+        Object.keys(meterElements).forEach((meterKey) => {
+          meterElements[meterKey].input.disabled = true;
+          meterElements[meterKey].submit.disabled = true;
+        });
+        executeButton.disabled = true;
+        pauseButton.innerText = "停止";
+        pauseButton.disabled = false;
+        deleteButton.disabled = false;
+        counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        counterAnnouncer.innerText = `0 / ${timerMultiple / standingCircleCircumference}周`;
+      };
+
+      const endExecution = () => {
+        startedSwitch = false;
+        stopAnimation();
+        auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
+        auxiliaryContext.clearRect(0, 0, displaySize, displaySize);
+        timer = 0;
+        Object.keys(meterElements).forEach((meterKey) => {
+          meterElements[meterKey].input.disabled = false;
+          meterElements[meterKey].submit.disabled = false;
+        });
+        executeButton.disabled = false;
+        pauseButton.disabled = true;
+      };
+
+      const pause = () => {
+        if (!animationSwitch) {
+          startAnimation();
+          pauseButton.innerText = "停止";
+        } else {
+          stopAnimation();
+          pauseButton.innerText = "再開";
+        }
+      };
+
+      const deleteExecution = () => {
+        endExecution();
+        displayContext.setTransform(1, 0, 0, 1, 0, 0);
+        displayContext.clearRect(0, 0, displaySize, displaySize);
+        output();
+        pauseButton.disabled = true;
+        deleteButton.disabled = true;
+        counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        counterAnnouncer.innerText = `/ ${timerMultiple / standingCircleCircumference}周`;
+      };
+
+      Object.keys(meterElements).forEach((meterKey) => {
+        meterElements[meterKey].meter.onpointerdown = (event) => {
+          setMeterSwitch(meterKey, getClientPosition(event).X);
+        };
+      });
+
+      document.onkeydown = (event) => {
+        if (event.code !== "Enter") return;
+        if (document.activeElement.tagName === "INPUT") {
+          const elementId = document.activeElement.id;
+          if (Object.keys(meterElements).includes(elementId)) {
+            submitMeter(elementId);
+          }
+        } else if (!startedSwitch && !animationSwitch) {
+          startExecution();
+        } else {
+          pause();
+        }
+      };
+
+      meterElements["standing-circle-circumference"].submit.onclick = () => submitMeter("standing-circle-circumference");
+      meterElements["roling-circle-circumference"].submit.onclick = () => submitMeter("roling-circle-circumference");
+      meterElements["focal-length"].submit.onclick = () => submitMeter("focal-length");
+
+      const documentMousemove = (event) => {
+        if (animationSwitch || !meterSwitch) return;
+        const { X } = getClientPosition(event);
+        setMeterLength(meterSwitch, X);
+      };
+
+      document.onpointerup = (event) => {
+        setMeterSwitch(false);
+      };
+
+      if (typeof document.ontouchmove === "object") {
+        document.ontouchmove = documentMousemove;
+      } else {
+        document.onmousemove = documentMousemove;
+      }
+
+      executeButton.onclick = () => {
+        if (animationSwitch) return;
+        startExecution();
+      };
+
+      pauseButton.onclick = () => {
+        pause();
+      }
+
+      deleteButton.onclick = () => {
+        deleteExecution();
+      };
+
+      colorInput.onchange = () => {
+        strokeColor = colorInput.value
+      };
+
+      form.onsubmit = () => false;
+
+      setMeterPosition("standing-circle-circumference", (standingCircleCircumference - baseCircleCircumference / 10) / (baseCircleCircumference - baseCircleCircumference / 10));
+      setMeterPosition("roling-circle-circumference", (rolingCircleCircumference - baseCircleCircumference / 10) / (baseCircleCircumference - baseCircleCircumference / 10));
+      setMeterPosition("focal-length", focalLengthPercentage);
+      meterElements["standing-circle-circumference"].input.value = standingCircleCircumference;
+      meterElements["roling-circle-circumference"].input.value = rolingCircleCircumference;
+      meterElements["focal-length"].input.value = focalLengthPercentage * 100;
+      pauseButton.disabled = true;
+      deleteButton.disabled = true;
+      setTimerMultiple();
+      output();
+    </script>
+  </body>
+</html>
