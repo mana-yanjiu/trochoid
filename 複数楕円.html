@@ -1,4 +1,4 @@
-<html>
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <style>
@@ -10,29 +10,67 @@
       }
       #contents {
         display: flex;
+        align-items: flex-start;
         margin: 10px;
+      }
+      #表示統括枠[data-環境="2"] {
+        background-color: #000000;
       }
       #form {
         margin-right: 10px;
-        width: 300px;
+        width: 360px;
         padding: 5px 5px 0 5px;
         border: solid 1px #aaaaaa;
         box-sizing: border-box;
         font-size: 12px;
+        /* opacity: 0.1; */
       }
-      #form .row {
+      .行 {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
         list-style: none;
         margin: 0 0 5px 0;
         padding: 5px;
         background-color: #eeeeff;
       }
-      #form .row .operator {
+      .行 .operator {
         display: flex;
         align-items: center;
       }
-      #form .row .input {
+      .行 label {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .行 label input {
+        margin: 0;
+      }
+      .入力枠 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: solid 1px #a0a0a0;
+        border-radius: 2px;
         margin-right: 5px;
         width: 50px;
+        background-color: #ffffff;
+      }
+      #色入力枠 {
+        width: 80px;
+      }
+      .入力枠 input {
+        display: block;
+        border: none;
+        outline: none;
+        width: 100%;
+      }
+      .入力枠:focus-within {
+        border-color: #4f7df3;
+      }
+      .単位 {
+        display: inline-block;
+        padding: 0 1px;
       }
       #form .submit-row {
         display: flex;
@@ -66,6 +104,7 @@
         height: calc(100% - 2px);
         border: solid 1px #888888;
         background-color: #ffffff;
+        cursor: pointer;
       }
       #display-wrapper {
         position: relative;
@@ -81,12 +120,13 @@
       }
       #focal-length-wrapper {
         display: grid;
-        grid-template-columns: 35% 1fr;
+        grid-template-columns: auto 1fr;
         grid-template-rows: auto 1fr;
+        gap: 0 10px;
         margin: 0;
         padding: 0;
       }
-      #focal-length-wrapper .title {
+      #focal-length-wrapper label {
         grid-column: 1;
       }
       #focal-length-announcer-wrapper {
@@ -97,7 +137,7 @@
         justify-content: center;
         align-items: flex-start;
         line-height: 24px;
-        padding-left: 5px;
+        gap: 4px;
       }
       #focal-length-operator-wrapper {
         grid-column: 2;
@@ -113,7 +153,7 @@
       #color-balance-wrapper {
         position: relative;
         margin: 5px auto 0;
-        width: 270px;
+        width: 330px;
       }
       #color-base-wrapper {
         height: 20px;
@@ -124,9 +164,6 @@
       #color-base-wrapper canvas,
       #color-balance-wrapper canvas {
         position: absolute;
-      }
-      #tangent-type-wrapper {
-        display: flex;
       }
       #counter {
         position: relative;
@@ -145,66 +182,110 @@
         padding: 0 5px;
         text-align: right;
       }
+      #表示統括枠[data-環境="2"] #announcer {
+        color: #ffffff;
+      }
       #gauge {
         position: absolute;
         left: 0;
+      }
+      .項目群 {
+        display: flex;
+        gap: 16px;
+      }
+      .項目 {
+        display: flex;
+      }
+      .内外指定 {
+        display: flex;
+        border: solid 1px #767676;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .内外指定 div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px;
+        background-color: #ffffff;
+        cursor: pointer;
+      }
+      .内外指定[data-内外="0"] div[data-値="0"],
+      .内外指定[data-内外="1"] div[data-値="1"] {
+        background-color: #446677;
+        color: #ffffff;
       }
     </style>
   </head>
   <body>
     <div id="contents">
       <form id="form">
-        <div class="row">
-          <div class="operator">
-            <span class="title">単位円</span>：<input type="text" class="input" id="standing-circle-circumference" />
-            <button id="standing-circle-circumference-submit">指定</button>
+        <div class="行">
+          <label>静止円</label>
+          <div class="項目">
+            <div class="入力枠"><input type="text" id="静止円" /></div>
+            <button id="静止円-submit">周長</button>
           </div>
-          <div class="meter" id="standing-circle-circumference-meter">
-            <div class="meter-handle" id="standing-circle-circumference-meter-handle"></div>
+          <div class="meter" id="静止円-meter">
+            <div class="meter-handle" id="静止円-meter-handle"></div>
           </div>
         </div>
-        <div class="row">
-          <div class="operator">
-            <span class="title">回転円1</span>：<input type="text" class="input" id="回転円1" />
-            <button id="回転円1-submit">指定</button>
+        <div class="行">
+          <label><input type="checkbox" id="回転円1-有効" value="1" checked disabled />回転円1</label>
+          <div class="項目群">
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="回転円1" /></div>
+              <button id="回転円1-submit">周長</button>
+            </div>
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="扁平率1" /><span class="単位">%</span></div>
+              <button id="扁平率1-submit">扁平率</button>
+            </div>
+            <div class="内外指定" data-内外="0">
+              <div data-値="0">内接</div><div data-値="1">外接</div>
+            </div>
           </div>
           <div class="meter" id="回転円1-meter">
             <div class="meter-handle" id="回転円1-meter-handle"></div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="operator">
-            <span class="title">扁平率1</span>：<input type="text" class="input" id="扁平率1" />
-            <button id="扁平率1-submit">指定</button>
           </div>
           <div class="meter" id="扁平率1-meter">
             <div class="meter-handle" id="扁平率1-meter-handle"></div>
           </div>
         </div>
-        <div class="row">
-          <div class="operator">
-            <span class="title">回転円2</span>：<input type="text" class="input" id="回転円2" />
-            <button id="回転円2-submit">指定</button>
+        <div class="行">
+          <label><input type="checkbox" id="回転円2-有効" value="1" checked />回転円2</label>
+          <div class="項目群">
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="回転円2" /></div>
+              <button id="回転円2-submit">周長</button>
+            </div>
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="扁平率2" /><span class="単位">%</span></div>
+              <button id="扁平率2-submit">扁平率</button>
+            </div>
+            <div class="内外指定" data-内外="0">
+              <div data-値="0">内接</div><div data-値="1">外接</div>
+            </div>
           </div>
           <div class="meter" id="回転円2-meter">
             <div class="meter-handle" id="回転円2-meter-handle"></div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="operator">
-            <span class="title">扁平率2</span>：<input type="text" class="input" id="扁平率2" />
-            <button id="扁平率2-submit">指定</button>
           </div>
           <div class="meter" id="扁平率2-meter">
             <div class="meter-handle" id="扁平率2-meter-handle"></div>
           </div>
         </div>
-        <div class="row">
+        <div class="行">
           <div id="focal-length-wrapper">
-            <div class="title">描画点：</div>
+            <label>描画点</label>
             <div id="focal-length-announcer-wrapper">
-              <div>長さ：<span id="focal-length-announcer-P"></span>%</div>
-              <div>角度：<span id="focal-length-announcer-T"></span>°</div>
+              <div class="項目">
+                <div class="入力枠"><input type="text" id="描画点距離" /></div>
+                <button type="button" id="描画点距離-submit">長さ</button>
+              </div>
+              <div class="項目">
+                <div class="入力枠"><input type="text" id="描画点角度" /><span class="単位">°</span></div>
+                <button type="button" id="描画点角度-submit">角度</button>
+              </div>
             </div>
             <div id="focal-length-operator-wrapper">
               <canvas id="focal-length-screen" width="120" height="120"></canvas>
@@ -212,22 +293,19 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="operator">
-            <span class="title">線の色</span>：<span id="color-announcer"></span>
+        <div class="行">
+          <div class="項目">
+            <div id="色入力枠" class="入力枠"><span class="単位">#</span><input type="text" id="色" /></div>
+            <button id="色-submit">線の色</button>
           </div>
           <div id="color-base-wrapper">
-            <canvas id="color-base-screen" width="270" height="20"></canvas>
-            <canvas id="color-base-operator" width="270" height="20"></canvas>
+            <canvas id="color-base-screen" width="330" height="20"></canvas>
+            <canvas id="color-base-operator" width="330" height="20"></canvas>
           </div>
           <div id="color-balance-wrapper">
-            <canvas id="color-balance-screen" width="270" height="70"></canvas>
-            <canvas id="color-balance-operator" width="270" height="70"></canvas>
+            <canvas id="color-balance-screen" width="330" height="70"></canvas>
+            <canvas id="color-balance-operator" width="330" height="70"></canvas>
           </div>
-        </div>
-        <div class="row" id="tangent-type-wrapper">
-          <input type="radio" name="tangent-type" id="tangent-type-I" checked /><label for="tangent-type-I">内接</label>
-          <input type="radio" name="tangent-type" id="tangent-type-O" /><label for="tangent-type-O">外接</label>
         </div>
         <div class="submit-row">
           <button id="execute">描画開始</button>
@@ -235,7 +313,7 @@
           <button id="delete">削除</button>
         </div>
       </form>
-      <div id="display-counter-wrapper">
+      <div id="表示統括枠" data-環境="1">
         <div id="display-wrapper">
           <canvas id="auxiliary"></canvas>
           <canvas id="display"></canvas>
@@ -254,46 +332,55 @@
       const 表示枠幅 = 500;
       const 表示径 = 表示枠幅 / 2;
       const gaugeHeight = 30;
-
+      const 表示統括枠実体 = document.getElementById('表示統括枠');
       const 表示枠実体 = document.getElementById('display-wrapper');
       const display = document.getElementById('display');
       const auxiliary = document.getElementById('auxiliary');
-      const 焦点距離Screen = document.getElementById('focal-length-screen');
+      const 焦点距離表示実体 = document.getElementById('focal-length-screen');
       const 焦点距離Operator = document.getElementById('focal-length-operator');
-      const 焦点距離AnnouncerT = document.getElementById('focal-length-announcer-T');
-      const 焦点距離AnnouncerP = document.getElementById('focal-length-announcer-P');
-      const colorBaseScreen = document.getElementById('color-base-screen');
-      const colorBaseOperator = document.getElementById('color-base-operator');
+      const 基本色表示実体 = document.getElementById('color-base-screen');
+      const 基本色操作実体 = document.getElementById('color-base-operator');
       const colorBalanceScreen = document.getElementById('color-balance-screen');
       const colorBalanceOperator = document.getElementById('color-balance-operator');
-      const colorAnnouncer = document.getElementById('color-announcer');
       const executeButton = document.getElementById('execute');
       const pauseButton = document.getElementById('pause');
       const deleteButton = document.getElementById('delete');
       const counterAnnouncer = document.getElementById('announcer');
       const counterGauge = document.getElementById('gauge');
       const form = document.getElementById('form');
-      const tangentTypeInputI = document.getElementById('tangent-type-I');
-      const tangentTypeInputO = document.getElementById('tangent-type-O');
 
       const displayContext = display.getContext('2d');
       const auxiliaryContext = auxiliary.getContext('2d');
-      const 焦点距離ScreenContext = 焦点距離Screen.getContext('2d');
-      const 焦点距離OperatorContext = 焦点距離Operator.getContext('2d');
+      const 焦点距離表示制御 = 焦点距離表示実体.getContext('2d');
+      const 焦点距離操作制御 = 焦点距離Operator.getContext('2d');
       const counterGaugeContext = counterGauge.getContext('2d');
-      const colorBaseScreenContext = colorBaseScreen.getContext('2d');
-      const colorBaseOperatorContext = colorBaseOperator.getContext('2d');
+      const 基本色表示制御 = 基本色表示実体.getContext('2d');
+      const 基本色操作制御 = 基本色操作実体.getContext('2d');
       const colorBalanceScreenContext = colorBalanceScreen.getContext('2d');
       const colorBalanceOperatorContext = colorBalanceOperator.getContext('2d');
 
-      const meterElements = ['standing-circle-circumference', '回転円1', '回転円2', '扁平率1', '扁平率2'].reduce((elements, meterType) => ({
+      const 入力実体群 = ['静止円', '回転円1', '回転円2', '扁平率1', '扁平率2', '描画点距離', '描画点角度', '色'].reduce((elements, meterType) => ({
         ...elements, [meterType]: {
           input: document.getElementById(`${meterType}`),
-          meter: document.getElementById(`${meterType}-meter`),
-          handle: document.getElementById(`${meterType}-meter-handle`),
           submit: document.getElementById(`${meterType}-submit`),
+          ...(meterType === '回転円2' ? { 有効: document.getElementById('回転円2-有効') } : {}),
         },
       }), {});
+      const 調整実体群 = ['静止円', '回転円1', '回転円2', '扁平率1', '扁平率2'].reduce((elements, meterType) => ({
+        ...elements, [meterType]: {
+          meter: document.getElementById(`${meterType}-meter`),
+          handle: document.getElementById(`${meterType}-meter-handle`),
+        },
+      }), {});
+
+      const 描画設定 = {
+
+      };
+      const 補助円基本座標群 = Array(8).fill(null).map((_, 係数) => [
+        Math.sin(Math.PI / 4 * (係数 + 0.5)),
+        Math.cos(Math.PI / 4 * (係数 + 0.5)),
+      ]);
+
       表示枠実体.style.width = `${表示枠幅}px`;
       表示枠実体.style.height = `${表示枠幅}px`;
       counterGauge.style.width = `${表示枠幅}px`;
@@ -305,30 +392,34 @@
       counterGauge.setAttribute('width', 表示枠幅);
       counterGauge.setAttribute('height', gaugeHeight);
       counterGaugeContext.fillStyle = '#66cc66';
-      焦点距離ScreenContext.strokeStyle = '#880000';
-      焦点距離ScreenContext.beginPath();
-      焦点距離ScreenContext.arc(60, 60, 25, 0, Math.PI * 2);
-      焦点距離ScreenContext.closePath();
-      焦点距離ScreenContext.stroke();
-      焦点距離ScreenContext.strokeStyle = '#dd7777';
-      焦点距離ScreenContext.beginPath();
-      焦点距離ScreenContext.arc(60, 60, 50, 0, Math.PI * 2);
-      焦点距離ScreenContext.closePath();
-      焦点距離ScreenContext.stroke();
-      焦点距離OperatorContext.strokeStyle = '#aa0000';
-      colorBaseOperatorContext.strokeStyle = '#ffffff';
-      colorBaseOperatorContext.fillStyle = '#ffffff';
-      colorBaseOperatorContext.lineWidth = 2;
+      焦点距離表示制御.strokeStyle = '#880000';
+      焦点距離表示制御.beginPath();
+      焦点距離表示制御.arc(60, 60, 25, 0, Math.PI * 2);
+      焦点距離表示制御.closePath();
+      焦点距離表示制御.stroke();
+      焦点距離表示制御.strokeStyle = '#dd7777';
+      焦点距離表示制御.beginPath();
+      焦点距離表示制御.arc(60, 60, 50, 0, Math.PI * 2);
+      焦点距離表示制御.closePath();
+      焦点距離表示制御.stroke();
+      焦点距離操作制御.strokeStyle = '#aa0000';
+      基本色操作制御.strokeStyle = '#ffffff';
+      基本色操作制御.fillStyle = '#ffffff';
+      基本色操作制御.lineWidth = 2;
       colorBalanceOperatorContext.strokeStyle = '#ffffff';
       colorBalanceOperatorContext.lineWidth = 2;
 
-      const 回転円 = [
-        { 周: 240, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 偏平率: 0 },
-        { 周: 150, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 偏平率: 0 },
+      const 回転円群 = [
+        { 周: 240, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 偏平率: 0, 接地: 0, 有効: true },
+        { 周: 150, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 偏平率: 0, 接地: 0, 有効: true },
       ];
       const 描画制御 = {
         動作: null,
+        記録対象1: null,
+        記録対象2: null,
+        記録: null,
         動作指示: false,
+        記録指示: false,
         前回座標: [0, 0],
         進捗: 0,
       };
@@ -338,22 +429,25 @@
       let 焦点距離 = 0;
       let 焦点主観角度 = 120 / 180 * Math.PI;
       let 焦点客観角度 = 0;
-      let tangentType = 'I';
       let meterHandleDiffX = 0;
       let meterSwitch = false;
       let animationSwitch = false;
       let animation = null;
       let startedSwitch = false;
+      let 予定時刻 = 0;
       let latestX = 0;
       let latestY = 0;
       let timerMultiple = 1;
+      let 単位実行時間 = 5;
       let strokeColorBase = 0.07;
       let strokeColorBalance = 0.8;
       let strokeColorSaturation = 0.9;
-      let strokeColor = '#000000';
+      let strokeColor = '000000';
+      let 表示環境 = 1;
 
       const 楕円近似弧群定義 = () => {
-        回転円.forEach((設定) => {
+        const 有効回転円群 = 回転円群.filter(({ 有効 }) => 有効);
+        有効回転円群.forEach((設定) => {
           const 近似周係数1 = 2 - 設定.偏平率;
           const 近似周係数2 = 3 * Math.pow(設定.偏平率 / 近似周係数1, 2);
           const 近似周係数3 = Math.PI * 近似周係数1 * (1 + 近似周係数2 / (10 + Math.pow(4 - 近似周係数2, 1 / 2)));
@@ -370,10 +464,10 @@
           }, [{ WY: 設定.単位長径, WX: 0, WA: 0 }]);
         });
 
-        const DX = Math.sin(焦点主観角度) * 回転円[0].短径 * 焦点距離率;
-        const DY = Math.cos(焦点主観角度) * 回転円[0].長径 * 焦点距離率;
-        焦点距離 = Math.pow(DX * DX + DY * DY, 1 / 2);
-        焦点客観角度 = Math.acos(DY / 焦点距離) * (DX >= 0 ? 1 : -1);
+        const 値1 = Math.sin(焦点主観角度) * 有効回転円群[有効回転円群.length - 1].短径 * 焦点距離率;
+        const 値2 = Math.cos(焦点主観角度) * 有効回転円群[有効回転円群.length - 1].長径 * 焦点距離率;
+        焦点距離 = Math.pow(値1 * 値1 + 値2 * 値2, 1 / 2);
+        焦点客観角度 = Math.acos(値2 / 焦点距離) * (値1 >= 0 ? 1 : -1);
       };
 
       const 座標計算 = () => {
@@ -383,7 +477,7 @@
         const 環境 = { 角度: 環境角度, 座標: [環境座標X, 環境座標Y] };
         const 座標群 = [];
 
-        回転円.forEach((設定, 設定番号) => {
+        回転円群.filter(({ 有効 }) => 有効).forEach((設定, 設定番号) => {
           const 進行長 = 描画制御.進捗 % 設定.周;
           const 段階 = Math.floor(進行長 / (設定.周 / 4));
           const 段階進行長 = 進行長 % (設定.周 / 4);
@@ -410,6 +504,7 @@
           WY *= 単位円径 / 単位円周 * Math.PI * 2;
           WY = Math.min(WY, 設定.長径);
           WY *= [1, 2].includes(段階) ? -1 : 1;
+          WY *= (設定.接地) ? -1 : 1;
 
           const RL2 = Math.pow(設定.長径, 2);
           const RS2 = Math.pow(設定.短径, 2);
@@ -427,46 +522,48 @@
             (接線X軸交点座標 < 0 && 接線Y軸交点座標 < 0) ? (Math.acos(接線X軸交点座標 / 接線長) * -1) : (Math.acos(接線X軸交点座標 * -1 / 接線長) * -1);
 
           座標群.push({
-            X: 環境.座標[0] - Math.sin(接点角度 - 接線角度 + 環境.角度) * 接点距離,
-            Y: 環境.座標[1] - Math.cos(接点角度 - 接線角度 + 環境.角度) * 接点距離,
-            T: 環境.角度 - 接線角度,
+            X: 環境.座標[0] - Math.sin(接点角度 - 接線角度 + 環境.角度 + (設定.接地 ? Math.PI : 0)) * 接点距離,
+            Y: 環境.座標[1] - Math.cos(接点角度 - 接線角度 + 環境.角度 + (設定.接地 ? Math.PI : 0)) * 接点距離,
+            T: 環境.角度 - 接線角度 + (設定.接地 ? Math.PI : 0),
           });
 
-          環境.座標[0] = 座標群[設定番号].X - Math.sin(環境.角度 - 接線角度 + Math.PI - 接点角度) * 接点距離;
-          環境.座標[1] = 座標群[設定番号].Y - Math.cos(環境.角度 - 接線角度 + Math.PI - 接点角度) * 接点距離;
-          環境.角度 = 環境.角度 + Math.PI - (接線角度 - Math.PI / 2) * 2;
-
-          接線角度 - Math.PI / 2
+          環境.座標[0] = 座標群[設定番号].X - Math.sin(環境.角度 - 接線角度 + Math.PI - 接点角度) * 接点距離 * (設定.接地 ? -1 : 1);
+          環境.座標[1] = 座標群[設定番号].Y - Math.cos(環境.角度 - 接線角度 + Math.PI - 接点角度) * 接点距離 * (設定.接地 ? -1 : 1);
+          環境.角度 = 環境.角度 + Math.PI - (接線角度 - Math.PI / 2) * 2 + (設定.接地 ? Math.PI : 0);
         });
 
         return 座標群;
       };
 
       const output = () => {
+        const 有効回転円群 = 回転円群.filter(({ 有効 }) => 有効);
         const 角度 = Math.PI * 2 / 静止円周 * 描画制御.進捗;
         const 座標群 = 座標計算();
+        const 円径係数 = 単位円径 * Math.PI * 2 / 単位円周;
 
         auxiliaryContext.clearRect(0, 0, 表示枠幅, 表示枠幅);
-        auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
-        auxiliaryContext.strokeStyle = '#cccccc';
+        // auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
+        // auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#cccccc' : '#444444';
+        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#cccccc' : '#888888';
         auxiliaryContext.beginPath();
         auxiliaryContext.arc(表示径 - 0.5, 表示径 - 0.5, 静止円径, 0, Math.PI * 2);
         auxiliaryContext.closePath();
         auxiliaryContext.stroke();
-        auxiliaryContext.strokeStyle = '#c0c0ee';
-        回転円.forEach((設定, 設定番号) => {
+        // auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#c0c0ee' : '#404066';
+        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#c0c0ee' : '#8080aa';
+        有効回転円群.forEach((設定, 設定番号) => {
           const { X: CX, Y: CY, T: CT } = 座標群[設定番号];
           const DX = CX + Math.sin(CT + 焦点客観角度) * 焦点距離;
           const DY = CY + Math.cos(CT + 焦点客観角度) * 焦点距離;
-          const EXB = 設定.単位短径 * 単位円径 * Math.PI * 2 / 単位円周;
-          const EYB = 設定.単位長径 * 単位円径 * Math.PI * 2 / 単位円周;
+          const EXB = 設定.単位短径 * 円径係数;
+          const EYB = 設定.単位長径 * 円径係数;
           auxiliaryContext.beginPath();
           auxiliaryContext.ellipse(表示径 - CX, 表示径 + CY, 設定.短径, 設定.長径, CT, 0, Math.PI * 2);
           auxiliaryContext.closePath();
           auxiliaryContext.stroke();
-          Array(8).fill(null).forEach((_, i) => {
-            const EX = Math.sin(Math.PI * 2 / 8 * (i + 0.5)) * EXB;
-            const EY = Math.cos(Math.PI * 2 / 8 * (i + 0.5)) * EYB;
+          補助円基本座標群.forEach(([X, Y]) => {
+            const EX = X * EXB;
+            const EY = Y * EYB;
             const ER = Math.pow(EX * EX + EY * EY, 1 / 2);
             const ET = Math.acos(EY / ER) * (EX >= 0 ? 1 : -1);
             const EL = ER - EXB * 0.3;
@@ -475,14 +572,14 @@
             auxiliaryContext.closePath();
             auxiliaryContext.stroke();
           });
-          if (設定番号 === 回転円.length - 1) {
+          if (設定番号 === 有効回転円群.length - 1) {
             auxiliaryContext.beginPath();
             auxiliaryContext.moveTo(表示径 - CX, 表示径 + CY);
             auxiliaryContext.lineTo(表示径 - DX, 表示径 + DY);
             auxiliaryContext.closePath();
             auxiliaryContext.stroke();
             if (描画制御.進捗 > 0) {
-              displayContext.strokeStyle = strokeColor;
+              displayContext.strokeStyle = `#${strokeColor}`;
               displayContext.beginPath();
               displayContext.moveTo(表示径 - latestX, 表示径 + latestY);
               displayContext.lineTo(表示径 - DX, 表示径 + DY);
@@ -494,34 +591,91 @@
             latestY = DY;
           }
         });
-        auxiliaryContext.strokeStyle = '#aaaaff';
+        // auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#aaaaff' : '#6666aa';
+        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#aaaaff' : '#8888cc';
         auxiliaryContext.beginPath();
         auxiliaryContext.moveTo(表示径, 表示径);
         auxiliaryContext.lineTo(表示径 - 静止円径 * Math.sin(角度), 表示径 + 静止円径 * Math.cos(角度));
         auxiliaryContext.closePath();
         auxiliaryContext.stroke();
-        auxiliaryContext.strokeStyle = '#ccccff';
+        // auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#ccccff' : '#8888bb';
+        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#ccccff' : '#aaaadd';
       };
 
       const animate = () => {
         output();
-        描画制御.進捗 ++;
-        counterGaugeContext.setTransform(1, 0, 0, 1, 0, 0);
         counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
         counterGaugeContext.fillRect(0, 0, 表示枠幅 * 描画制御.進捗 / timerMultiple, gaugeHeight);
         counterAnnouncer.innerText = `${描画制御.進捗} / ${timerMultiple}`;
         if (描画制御.進捗 < timerMultiple) {
           if (animationSwitch) {
-            animation = setTimeout(animate, 5);
+            描画制御.進捗 ++;
+            const 現在時刻 = (new Date()).getTime();
+            const 次回予定時刻 = Math.round(予定時刻 - (timerMultiple - 描画制御.進捗) * 単位実行時間);
+            const 次回実行時間 = Math.max(次回予定時刻 - 現在時刻, 1);
+            animation = setTimeout(animate, 次回実行時間);
+            // console.log(`${現在時刻} <> ${次回予定時刻} (${予定時刻} - (${timerMultiple} - ${timer}) * ${単位実行時間})`);
+// if (描画制御.進捗 === 1000) {
+// console.log(次回予定時刻 - 現在時刻);
+// }
           }
         } else {
           endExecution();
+
+          console.log('GGGG');
+          if (描画制御.記録指示) {
+
+            console.log('EEEE');
+
+            描画制御.記録.stop();
+            console.log('FFFF');
+
+
+
+            // function processMediaWhenStop(stream, onStop) {
+            //   const mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9") ? "video/webm; codecs=vp9" : "video/webm";
+            //   const mediaRecorder = new MediaRecorder(stream, { mimeType: mime })
+            //   // start record
+            //   const chunks = [];
+            //   mediaRecorder.addEventListener('dataavailable', e => chunks.push(e.data));
+
+            //   // call on stop callback
+            //   mediaRecorder.addEventListener('stop', async () => {
+            //     const blob = new Blob(chunks, { type: chunks[0].type });
+            //     await onStop(blob);
+            //   });
+
+            //   return mediaRecorder;
+            // }
+
+
+
+            // function downloadWebm(blob) {
+            //   const url = URL.createObjectURL(blob);
+            //   const a = document.createElement('a');
+            //   a.href = url;
+            //   a.download = 'video.webm';
+            //   a.click();
+            // }
+          }
         }
       };
 
       const startAnimation = () => {
         if (animation) clearInterval(animation);
         animationSwitch = true;
+        予定時刻 = (new Date()).getTime() + 単位実行時間 * (timerMultiple - 描画制御.進捗);
+        console.log([
+静止円周,
+入力実体群.回転円1.input.value,
+入力実体群.扁平率1.input.value,
+...(回転円群[1].有効 ? [
+  入力実体群.回転円2.input.value,
+  入力実体群.扁平率2.input.value,
+] : []),
+入力実体群.描画点距離.input.value,
+入力実体群.描画点角度.input.value
+].join('-'));
         animate();
       };
 
@@ -531,8 +685,8 @@
       };
 
       const getMeterParams = (meterType) => {
-        const meterRect = meterElements[meterType].meter.getBoundingClientRect();
-        const meterHandleRect = meterElements[meterType].handle.getBoundingClientRect();
+        const meterRect = 調整実体群[meterType].meter.getBoundingClientRect();
+        const meterHandleRect = 調整実体群[meterType].handle.getBoundingClientRect();
 
         return {
           left: meterRect.left + meterHandleRect.width / 2,
@@ -544,14 +698,14 @@
         if (animationSwitch) return;
 
         const { left, right } = getMeterParams(meterType);
-        meterElements[meterType].handle.style.left = `${Math.floor((right - left) * percentage)}px`;
+        調整実体群[meterType].handle.style.left = `${Math.floor((right - left) * percentage)}px`;
       };
 
       const setMeterSwitch = (operate, clientX) => {
         if (animationSwitch && operate) return;
         meterSwitch = operate;
         if (operate === false) return;
-        const meterHandleRect = meterElements[operate].handle.getBoundingClientRect();
+        const meterHandleRect = 調整実体群[operate].handle.getBoundingClientRect();
         if (clientX >= meterHandleRect.left && clientX <= meterHandleRect.left + meterHandleRect.width) {
           meterHandleDiffX = clientX - (meterHandleRect.left + meterHandleRect.width / 2);
         } else {
@@ -567,37 +721,37 @@
         percentage = Math.floor(percentage * 100) / 100;
         setMeterPosition(meterType, percentage);
         switch (meterType) {
-          case 'standing-circle-circumference':
+          case '静止円':
             静止円周 = Math.floor(単位円周 / 10 + percentage * (単位円周 - 単位円周 / 10));
             静止円径 = 単位円径 * 静止円周 / 単位円周;
-            settimerMultiple();
-            meterElements[meterType].input.value = 静止円周;
+            setTimerMultiple();
+            入力実体群[meterType].input.value = 静止円周;
             楕円近似弧群定義();
             break;
           case '回転円1':
-            回転円[0].周 = Math.floor(単位円周 / 10 + percentage * (単位円周 - 単位円周 / 10));
-            rolingCircleRadius = 単位円径 * 回転円[0].周 / 単位円周;
-            settimerMultiple();
-            meterElements[meterType].input.value = 回転円[0].周;
+            回転円群[0].周 = Math.floor(単位円周 / 10 + percentage * (単位円周 - 単位円周 / 10));
+            rolingCircleRadius = 単位円径 * 回転円群[0].周 / 単位円周;
+            setTimerMultiple();
+            入力実体群[meterType].input.value = 回転円群[0].周;
             楕円近似弧群定義();
             break;
           case '回転円2':
-            回転円[1].周 = Math.floor(単位円周 / 10 + percentage * (単位円周 - 単位円周 / 10));
-            rolingCircleRadius = 単位円径 * 回転円[1].周 / 単位円周;
-            settimerMultiple();
-            meterElements[meterType].input.value = 回転円[1].周;
+            回転円群[1].周 = Math.floor(単位円周 / 10 + percentage * (単位円周 - 単位円周 / 10));
+            rolingCircleRadius = 単位円径 * 回転円群[1].周 / 単位円周;
+            setTimerMultiple();
+            入力実体群[meterType].input.value = 回転円群[1].周;
             楕円近似弧群定義();
             break;
           case '扁平率1':
-            回転円[0].偏平率 = Math.floor(90 * percentage) / 100;
-            settimerMultiple();
-            meterElements[meterType].input.value = 回転円[0].偏平率 * 100;
+            回転円群[0].偏平率 = Math.floor(90 * percentage) / 100;
+            setTimerMultiple();
+            入力実体群[meterType].input.value = 回転円群[0].偏平率 * 100;
             楕円近似弧群定義();
             break;
           case '扁平率2':
-            回転円[1].偏平率 = Math.floor(90 * percentage) / 100;
-            settimerMultiple();
-            meterElements[meterType].input.value = 回転円[1].偏平率 * 100;
+            回転円群[1].偏平率 = Math.floor(90 * percentage) / 100;
+            setTimerMultiple();
+            入力実体群[meterType].input.value = 回転円群[1].偏平率 * 100;
             楕円近似弧群定義();
             break;
           default:
@@ -614,58 +768,101 @@
 
       const submitMeter = (meterType) => {
         if (animationSwitch) return;
-        const inputValue = parseInt(meterElements[meterType].input.value);
+        const inputValue = parseInt(入力実体群[meterType].input.value);
         switch (meterType) {
-          case 'standing-circle-circumference':
+          case '静止円':
             静止円周 = inputValue;
             if (静止円周 < 単位円周 / 10) 静止円周 = 単位円周 / 10;
             if (静止円周 > 単位円周) 静止円周 = 単位円周;
             setMeterPosition(meterType, (静止円周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
             静止円径 = 単位円径 * 静止円周 / 単位円周;
-            meterElements[meterType].input.value = 静止円周;
+            入力実体群[meterType].input.value = 静止円周;
             楕円近似弧群定義();
-            settimerMultiple();
+            setTimerMultiple();
             output();
             break;
           case '回転円1':
-            回転円[0].周 = inputValue;
-            if (回転円[0].周 < 単位円周 / 10) 回転円[0].周 = 単位円周 / 10;
-            if (回転円[0].周 > 単位円周) 回転円[0].周 = 単位円周;
-            setMeterPosition(meterType, (回転円[0].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
-            meterElements[meterType].input.value = 回転円[0].周;
+            回転円群[0].周 = inputValue;
+            if (回転円群[0].周 < 単位円周 / 10) 回転円群[0].周 = 単位円周 / 10;
+            if (回転円群[0].周 > 単位円周) 回転円群[0].周 = 単位円周;
+            setMeterPosition(meterType, (回転円群[0].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
+            入力実体群[meterType].input.value = 回転円群[0].周;
             楕円近似弧群定義();
-            settimerMultiple();
+            setTimerMultiple();
             output();
             break;
           case '回転円2':
-            回転円[1].周 = inputValue;
-            if (回転円[1].周 < 単位円周 / 10) 回転円[1].周 = 単位円周 / 10;
-            if (回転円[1].周 > 単位円周) 回転円[1].周 = 単位円周;
-            setMeterPosition(meterType, (回転円[1].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
-            meterElements[meterType].input.value = 回転円[1].周;
+            回転円群[1].周 = inputValue;
+            if (回転円群[1].周 < 単位円周 / 10) 回転円群[1].周 = 単位円周 / 10;
+            if (回転円群[1].周 > 単位円周) 回転円群[1].周 = 単位円周;
+            setMeterPosition(meterType, (回転円群[1].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
+            入力実体群[meterType].input.value = 回転円群[1].周;
             楕円近似弧群定義();
-            settimerMultiple();
+            setTimerMultiple();
             output();
             break;
           case '扁平率1':
-            回転円[0].偏平率 = inputValue / 100;
-            if (回転円[0].偏平率 < 0) 回転円[0].偏平率 = 0;
-            if (回転円[0].偏平率 > 0.9) 回転円[0].偏平率 = 0.9;
-            setMeterPosition(meterType, 回転円[0].偏平率 / 0.9);
-            meterElements[meterType].input.value = 回転円[0].偏平率 * 100;
+            回転円群[0].偏平率 = inputValue / 100;
+            if (回転円群[0].偏平率 < 0) 回転円群[0].偏平率 = 0;
+            if (回転円群[0].偏平率 > 0.9) 回転円群[0].偏平率 = 0.9;
+            setMeterPosition(meterType, 回転円群[0].偏平率 / 0.9);
+            入力実体群[meterType].input.value = 回転円群[0].偏平率 * 100;
             楕円近似弧群定義();
-            settimerMultiple();
+            setTimerMultiple();
             output();
             break;
           case '扁平率2':
-            回転円[1].偏平率 = inputValue / 100;
-            if (回転円[1].偏平率 < 0) 回転円[1].偏平率 = 0;
-            if (回転円[1].偏平率 > 0.9) 回転円[1].偏平率 = 0.9;
-            setMeterPosition(meterType, 回転円[1].偏平率 / 0.9);
-            meterElements[meterType].input.value = 回転円[1].偏平率 * 100;
+            回転円群[1].偏平率 = inputValue / 100;
+            if (回転円群[1].偏平率 < 0) 回転円群[1].偏平率 = 0;
+            if (回転円群[1].偏平率 > 0.9) 回転円群[1].偏平率 = 0.9;
+            setMeterPosition(meterType, 回転円群[1].偏平率 / 0.9);
+            入力実体群[meterType].input.value = 回転円群[1].偏平率 * 100;
             楕円近似弧群定義();
-            settimerMultiple();
+            setTimerMultiple();
             output();
+            break;
+          case '描画点距離':
+          case '描画点角度':
+            if (meterType === '描画点角度') {
+              焦点主観角度 = inputValue / 180 * Math.PI;
+            } else {
+              焦点距離率 = inputValue / 100;
+            }
+            display焦点距離();
+            楕円近似弧群定義();
+            output();
+            break;
+          case '色':
+            const matched = 入力実体群[meterType].input.value.match(/([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/i);
+            const [_, DR, DG, DB] = matched || ["", "00", "00", "00"];
+            // 入力実体群[meterType].input.value = `#${DR}${DG}${DB}`;
+            const realColors = [
+              { C: "R", V: parseInt(DR, 16) / 255 },
+              { C: "G", V: parseInt(DG, 16) / 255 },
+              { C: "B", V: parseInt(DB, 16) / 255 },
+            ].sort((P1, P2) => P2.V - P1.V);
+            strokeColorBalance = realColors[0].V;
+            strokeColorSaturation = 1 - (realColors[2].V / (strokeColorBalance || 1));
+            strokeColorBase = (() => {
+              const P = 1 - (1 - realColors[1].V / (strokeColorBalance || 1)) / (strokeColorSaturation || 1);
+              switch (true) {
+                case realColors[0].C === "R" && realColors[1].C === "B":
+                  return 1 / 6 * (0 + P);
+                case realColors[0].C === "B" && realColors[1].C === "R":
+                  return 1 / 6 * (2 - P);
+                case realColors[0].C === "B" && realColors[1].C === "G":
+                  return 1 / 6 * (2 + P);
+                case realColors[0].C === "G" && realColors[1].C === "B":
+                  return 1 / 6 * (4 - P);
+                case realColors[0].C === "G" && realColors[1].C === "R":
+                  return 1 / 6 * (4 + P);
+                default:
+                  return 1 / 6 * (6 - P);
+              }
+            })();
+            displayColorBase();
+            displayColorBalance();
+            setColor();
             break;
           default:
         }
@@ -689,14 +886,14 @@
       const display焦点距離 = () => {
         const X = Math.sin(焦点主観角度) * 焦点距離率 * 25;
         const Y = Math.cos(焦点主観角度) * 焦点距離率 * -25;
-        焦点距離OperatorContext.clearRect(0, 0, 120, 120);
-        焦点距離OperatorContext.setTransform(1, 0, 0, 1, 0, 0);
-        焦点距離OperatorContext.beginPath();
-        焦点距離OperatorContext.arc(60 - X, 60 - Y, 5, 0, Math.PI * 2);
-        焦点距離OperatorContext.closePath();
-        焦点距離OperatorContext.fill();
-        焦点距離AnnouncerT.innerText = Math.round(焦点主観角度 / Math.PI * 180);
-        焦点距離AnnouncerP.innerText = Math.round(焦点距離率 * 100);
+        焦点距離操作制御.clearRect(0, 0, 120, 120);
+        焦点距離操作制御.setTransform(1, 0, 0, 1, 0, 0);
+        焦点距離操作制御.beginPath();
+        焦点距離操作制御.arc(60 - X, 60 - Y, 5, 0, Math.PI * 2);
+        焦点距離操作制御.closePath();
+        焦点距離操作制御.fill();
+        入力実体群.描画点角度.input.value = Math.round(焦点主観角度 / Math.PI * 180);
+        入力実体群.描画点距離.input.value = Math.round(焦点距離率 * 100);
       };
 
       const initColor = () => {
@@ -709,23 +906,23 @@
           '#ffff00',
         ];
         colors.forEach((color, i) => {
-          const XS = 45 * i;
-          const XE = 45 * (i + 1);
-          const palet = colorBaseScreenContext.createLinearGradient(XS, 0, XE, 0);
+          const XS = 55 * i;
+          const XE = 55 * (i + 1);
+          const palet = 基本色表示制御.createLinearGradient(XS, 0, XE, 0);
           palet.addColorStop(0.0, color);
           palet.addColorStop(1.0, colors[(i + 1) % 6]);
-          colorBaseScreenContext.fillStyle = palet;
-          colorBaseScreenContext.beginPath();
-          colorBaseScreenContext.rect(XS, 0, XE, 20);
-          colorBaseScreenContext.closePath();
-          colorBaseScreenContext.fill();
+          基本色表示制御.fillStyle = palet;
+          基本色表示制御.beginPath();
+          基本色表示制御.rect(XS, 0, XE, 20);
+          基本色表示制御.closePath();
+          基本色表示制御.fill();
         });
 
         setColor();
       };
 
       const setColorBase = (event, operate) => {
-        const operatorHandleRect = colorBaseOperator.getBoundingClientRect();
+        const operatorHandleRect = 基本色操作実体.getBoundingClientRect();
         const client = getClientPosition(event);
         const X = client.X - operatorHandleRect.left;
         let P = X / operatorHandleRect.width;
@@ -771,41 +968,41 @@
         G = (G < 16 ? '0' : '') + G.toString(16);
         B = (B < 16 ? '0' : '') + B.toString(16);
 
-        strokeColor = `#${R}${G}${B}`;
-        colorAnnouncer.innerText = strokeColor;
+        strokeColor = `${R}${G}${B}`;
+        入力実体群.色.input.value = strokeColor;
       };
 
       const displayColorBase = () => {
-        colorBaseOperatorContext.clearRect(0, 0, 270, 20);
-        colorBaseOperatorContext.setTransform(1, 0, 0, 1, 0, 0);
-        colorBaseOperatorContext.beginPath();
-        colorBaseOperatorContext.moveTo(270 * strokeColorBase, 0);
-        colorBaseOperatorContext.lineTo(270 * strokeColorBase, 20);
-        colorBaseOperatorContext.closePath();
-        colorBaseOperatorContext.stroke();
-        colorBaseOperatorContext.beginPath();
-        colorBaseOperatorContext.moveTo(270 * strokeColorBase - 5, 8);
-        colorBaseOperatorContext.lineTo(270 * strokeColorBase - 5, 12);
-        colorBaseOperatorContext.lineTo(270 * strokeColorBase - 2, 10);
-        colorBaseOperatorContext.closePath();
-        colorBaseOperatorContext.fill();
-        colorBaseOperatorContext.beginPath();
-        colorBaseOperatorContext.moveTo(270 * strokeColorBase + 5, 8);
-        colorBaseOperatorContext.lineTo(270 * strokeColorBase + 5, 12);
-        colorBaseOperatorContext.lineTo(270 * strokeColorBase + 2, 10);
-        colorBaseOperatorContext.closePath();
-        colorBaseOperatorContext.fill();
+        基本色操作制御.clearRect(0, 0, 330, 20);
+        基本色操作制御.setTransform(1, 0, 0, 1, 0, 0);
+        基本色操作制御.beginPath();
+        基本色操作制御.moveTo(330 * strokeColorBase, 0);
+        基本色操作制御.lineTo(330 * strokeColorBase, 20);
+        基本色操作制御.closePath();
+        基本色操作制御.stroke();
+        基本色操作制御.beginPath();
+        基本色操作制御.moveTo(330 * strokeColorBase - 5, 8);
+        基本色操作制御.lineTo(330 * strokeColorBase - 5, 12);
+        基本色操作制御.lineTo(330 * strokeColorBase - 2, 10);
+        基本色操作制御.closePath();
+        基本色操作制御.fill();
+        基本色操作制御.beginPath();
+        基本色操作制御.moveTo(330 * strokeColorBase + 5, 8);
+        基本色操作制御.lineTo(330 * strokeColorBase + 5, 12);
+        基本色操作制御.lineTo(330 * strokeColorBase + 2, 10);
+        基本色操作制御.closePath();
+        基本色操作制御.fill();
 
         const [R, G, B] = getColorElements();
 
-        const paletC = colorBalanceScreenContext.createLinearGradient(0, 0, 270, 0);
+        const paletC = colorBalanceScreenContext.createLinearGradient(0, 0, 330, 0);
         paletC.addColorStop(0.0, '#ffffff');
         paletC.addColorStop(1.0, `rgb(${Math.floor(R * 255)}, ${Math.floor(G * 255)}, ${Math.floor(B * 255)})`);
-        colorBalanceScreenContext.clearRect(0, 0, 270, 70);
+        colorBalanceScreenContext.clearRect(0, 0, 330, 70);
         colorBalanceScreenContext.setTransform(1, 0, 0, 1, 0, 0);
         colorBalanceScreenContext.fillStyle = paletC;
         colorBalanceScreenContext.beginPath();
-        colorBalanceScreenContext.rect(0, 0, 270, 70);
+        colorBalanceScreenContext.rect(0, 0, 330, 70);
         colorBalanceScreenContext.closePath();
         colorBalanceScreenContext.fill();
         const paletT = colorBalanceScreenContext.createLinearGradient(0, 0, 0, 70);
@@ -813,16 +1010,16 @@
         paletT.addColorStop(1.0, '#000000ff');
         colorBalanceScreenContext.fillStyle = paletT;
         colorBalanceScreenContext.beginPath();
-        colorBalanceScreenContext.rect(0, 0, 270, 70);
+        colorBalanceScreenContext.rect(0, 0, 330, 70);
         colorBalanceScreenContext.closePath();
         colorBalanceScreenContext.fill();
       };
 
       const displayColorBalance = () => {
-        colorBalanceOperatorContext.clearRect(0, 0, 270, 70);
+        colorBalanceOperatorContext.clearRect(0, 0, 330, 70);
         colorBalanceOperatorContext.setTransform(1, 0, 0, 1, 0, 0);
         colorBalanceOperatorContext.beginPath();
-        colorBalanceOperatorContext.arc(270 * strokeColorSaturation, 70 * (1 - strokeColorBalance), 7, 0, Math.PI * 2);
+        colorBalanceOperatorContext.arc(330 * strokeColorSaturation, 70 * (1 - strokeColorBalance), 7, 0, Math.PI * 2);
         colorBalanceOperatorContext.closePath();
         colorBalanceOperatorContext.stroke();
       };
@@ -853,8 +1050,9 @@
 
       const 素因数分解 = (分子, 分母, 指数 = 0) => 分子 % 分母 ? [分子, 指数] : 素因数分解(分子 / 分母, 分母, 指数 + 1);
 
-      const settimerMultiple = () => {
-        const 公倍数群 = [静止円周, ...回転円.map(({ 周 }) => 周)].reduce((群, 周) => {
+      const setTimerMultiple = () => {
+        const 有効回転円群 = 回転円群.filter(({ 有効 }) => 有効);
+        const 公倍数群 = [静止円周, ...有効回転円群.map(({ 周 }) => 周)].reduce((群, 周) => {
           try {
             Array(周 - 1).fill(null).reduce((分子, _, 分母係数) => {
               const [残数, 指数] = 素因数分解(分子, 分母係数 + 2);
@@ -877,25 +1075,25 @@
         }, {});
         timerMultiple = Object.keys(公倍数群).reduce((値, 係数) => 値 * Math.pow(係数, 公倍数群[係数]), 1);
         if (
+          有効回転円群.length > 1 &&
           !((timerMultiple / 2) % 静止円周) &&
-          !((timerMultiple / 2) % 回転円[1].周) &&
-          ((timerMultiple / 2) % 回転円[0].周 === 回転円[0].周 / 2)
+          !((timerMultiple / 2) % 有効回転円群[1].周) &&
+          ((timerMultiple / 2) % 有効回転円群[0].周 === 有効回転円群[0].周 / 2)
         ) {
           timerMultiple /= 2;
         }
         counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
-        counterAnnouncer.innerText = `0 / ${timerMultiple}`;
+        // counterAnnouncer.innerText = `0 / ${timerMultiple}`;
+        counterAnnouncer.innerText = `${timerMultiple} (${Math.ceil(timerMultiple * 単位実行時間 / 10) / 100}秒)`;
       }
 
       const startExecution = () => {
         startedSwitch = true;
         startAnimation();
-        Object.keys(meterElements).forEach((meterKey) => {
-          meterElements[meterKey].input.disabled = true;
-          meterElements[meterKey].submit.disabled = true;
+        Object.keys(調整実体群).forEach((meterKey) => {
+          入力実体群[meterKey].input.disabled = true;
+          入力実体群[meterKey].submit.disabled = true;
         });
-        tangentTypeInputI.disabled = true;
-        tangentTypeInputO.disabled = true;
         executeButton.disabled = true;
         pauseButton.innerText = '停止';
         pauseButton.disabled = false;
@@ -910,12 +1108,10 @@
         auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
         auxiliaryContext.clearRect(0, 0, 表示枠幅, 表示枠幅);
         描画制御.進捗 = 0;
-        Object.keys(meterElements).forEach((meterKey) => {
-          meterElements[meterKey].input.disabled = false;
-          meterElements[meterKey].submit.disabled = false;
+        Object.keys(調整実体群).forEach((meterKey) => {
+          入力実体群[meterKey].input.disabled = false;
+          入力実体群[meterKey].submit.disabled = false;
         });
-        tangentTypeInputI.disabled = false;
-        tangentTypeInputO.disabled = false;
         executeButton.disabled = false;
         pauseButton.disabled = true;
       };
@@ -941,11 +1137,82 @@
         counterAnnouncer.innerText = `0 / ${timerMultiple}`;
       };
 
+      const 動画 = async () => {
+        // mediaStreamの取得(video/canvas)
+        描画制御.記録対象1 = display.captureStream();
+        描画制御.記録対象2 = auxiliary.captureStream();
+        描画制御.記録指示 = true;
+        startAnimation();
+        // mediaStreamの取得(画面キャプチャー)
+        // stream = await navigator.mediaDevices.getDisplayMedia();
+        // mediaStreamの取得(Webカメラ)
+        // stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+        const mediaStream = new MediaStream();
+        // それぞれのストリーム内にあるトラックを取り出して、同じストリームに混ぜる
+        [描画制御.記録対象2, 描画制御.記録対象1].forEach((記録対象) => {
+          記録対象.getTracks().forEach((track) => mediaStream.addTrack(track));
+        });
+
+        console.log('AAAA');
+        // const mimeType = MediaRecorder.isTypeSupported("video/webm; codecs=vp9") ? "video/webm; codecs=vp9" : "video/webm";
+        // 描画制御.記録 = new MediaRecorder(描画制御.記録対象, { mimeType });
+        描画制御.記録 = new MediaRecorder(mediaStream);
+        // start record
+        const chunks = [];
+        // 描画制御.記録.addEventListener('dataavailable', e => chunks.push(e.data));
+        描画制御.記録.addEventListener('dataavailable', (e) => {
+          console.log('SSSS');
+          chunks.push(e.data);
+        });
+        描画制御.記録.start();
+
+        console.log('BBBB');
+        // call on stop callback
+        描画制御.記録.addEventListener('stop', () => {
+          console.log('CCCC');
+          const blob = new Blob(chunks, { type: chunks[0].type });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'video.webm';
+          a.click();
+          console.log('DDDD');
+        });
+        // function processMediaWhenStop(stream, onStop) {
+        //   const mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9") ? "video/webm; codecs=vp9" : "video/webm";
+        //   const mediaRecorder = new MediaRecorder(stream, { mimeType: mime })
+        //   // start record
+        //   const chunks = [];
+        //   mediaRecorder.addEventListener('dataavailable', e => chunks.push(e.data));
+
+        //   // call on stop callback
+        //   mediaRecorder.addEventListener('stop', async () => {
+        //     const blob = new Blob(chunks, { type: chunks[0].type });
+        //     await onStop(blob);
+        //   });
+
+        //   return mediaRecorder;
+        // }
+
+
+
+        // function downloadWebm(blob) {
+        //   const url = URL.createObjectURL(blob);
+        //   const a = document.createElement('a');
+        //   a.href = url;
+        //   a.download = 'video.webm';
+        //   a.click();
+        // }
+
+
+      };
+
       document.onkeydown = (event) => {
         if (event.code !== 'Enter') return;
         if (document.activeElement.tagName === 'INPUT') {
           const elementId = document.activeElement.id;
-          if (Object.keys(meterElements).includes(elementId)) {
+          if (Object.keys(入力実体群).includes(elementId)) {
             submitMeter(elementId);
           }
         } else if (!startedSwitch && !animationSwitch) {
@@ -955,18 +1222,14 @@
         }
       };
 
-      Object.keys(meterElements).forEach((meterKey) => {
-        meterElements[meterKey].meter.onpointerdown = (event) => {
-          setMeterSwitch(meterKey, getClientPosition(event).X);
-        };
-        meterElements[meterKey].submit.onclick = () => submitMeter(meterKey);
+      Object.keys(入力実体群).forEach((meterKey) => {
+        if (調整実体群[meterKey]) {
+          調整実体群[meterKey].meter.onpointerdown = (event) => {
+            setMeterSwitch(meterKey, getClientPosition(event).X);
+          };
+        }
+        入力実体群[meterKey].submit.onclick = () => submitMeter(meterKey);
       });
-
-      const setTangentType = (operate) => {
-        tangentType = operate;
-        楕円近似弧群定義();
-        output();
-      };
 
       const documentMousemove = (event) => {
         switch (meterSwitch) {
@@ -989,6 +1252,11 @@
 
       document.onpointerup = (event) => {
         setMeterSwitch(false);
+      };
+
+      const 表示環境指定 = (指定) => {
+        表示環境 = [1, 2].includes(指定) ? 指定 : 1;
+        表示統括枠実体.dataset.環境 = 表示環境;
       };
 
       if (typeof document.ontouchmove === 'object') {
@@ -1016,7 +1284,7 @@
         set焦点距離(event, 'set');
       };
 
-      colorBaseOperator.onmousedown = (event) => {
+      基本色操作実体.onmousedown = (event) => {
         if (meterSwitch) return;
         meterSwitch = 'color-base';
         setColorBase(event, 'set');
@@ -1028,26 +1296,37 @@
         setColorBalance(event, 'set');
       };
 
-      tangentTypeInputI.onchange = (event) => {
-        setTangentType(event.target.checked ? 'I' : 'O');
-      };
+      入力実体群.回転円2.有効.addEventListener('change', (状況) => {
+        回転円群[1].有効 = 状況.target.checked;
+        setTimerMultiple();
+        楕円近似弧群定義();
+        output();
+      });
 
-      tangentTypeInputO.onchange = (event) => {
-        setTangentType(event.target.checked ? 'O' : 'I');
-      };
+      document.querySelectorAll('.内外指定').forEach((内外指定統括実体, 番号) => {
+        内外指定統括実体.querySelectorAll('div').forEach((内外指定実体) => {
+          const 内外指定 = parseInt(内外指定実体.dataset.値);
+          内外指定実体.addEventListener('click', () => {
+            回転円群[番号].接地 = 内外指定;
+            内外指定統括実体.dataset.内外 = `${内外指定}`;
+            楕円近似弧群定義();
+            output();
+          });
+        });
+      });
 
       form.onsubmit = () => false;
 
-      setMeterPosition('standing-circle-circumference', (静止円周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
-      setMeterPosition('回転円1', (回転円[0].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
-      setMeterPosition('回転円2', (回転円[1].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
-      setMeterPosition('扁平率1', 回転円[0].偏平率);
-      setMeterPosition('扁平率2', 回転円[1].偏平率);
-      meterElements['standing-circle-circumference'].input.value = 静止円周;
-      meterElements['回転円1'].input.value = 回転円[0].周;
-      meterElements['回転円2'].input.value = 回転円[1].周;
-      meterElements['扁平率1'].input.value = 回転円[0].偏平率 * 100;
-      meterElements['扁平率2'].input.value = 回転円[1].偏平率 * 100;
+      setMeterPosition('静止円', (静止円周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
+      setMeterPosition('回転円1', (回転円群[0].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
+      setMeterPosition('回転円2', (回転円群[1].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
+      setMeterPosition('扁平率1', 回転円群[0].偏平率);
+      setMeterPosition('扁平率2', 回転円群[1].偏平率);
+      入力実体群['静止円'].input.value = 静止円周;
+      入力実体群['回転円1'].input.value = 回転円群[0].周;
+      入力実体群['回転円2'].input.value = 回転円群[1].周;
+      入力実体群['扁平率1'].input.value = 回転円群[0].偏平率 * 100;
+      入力実体群['扁平率2'].input.value = 回転円群[1].偏平率 * 100;
       楕円近似弧群定義();
       display焦点距離();
       initColor();
@@ -1055,7 +1334,7 @@
       displayColorBalance();
       pauseButton.disabled = true;
       deleteButton.disabled = true;
-      settimerMultiple();
+      setTimerMultiple();
       output();
     </script>
   </body>
