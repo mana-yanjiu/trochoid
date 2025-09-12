@@ -195,13 +195,13 @@
       .項目 {
         display: flex;
       }
-      #内外指定 {
+      .内外指定 {
         display: flex;
         border: solid 1px #767676;
         border-radius: 3px;
         overflow: hidden;
       }
-      #内外指定 div {
+      .内外指定 div {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -209,8 +209,8 @@
         background-color: #ffffff;
         cursor: pointer;
       }
-      #内外指定[data-内外="0"] div[data-値="0"],
-      #内外指定[data-内外="1"] div[data-値="1"] {
+      .内外指定[data-内外="0"] div[data-値="0"],
+      .内外指定[data-内外="1"] div[data-値="1"] {
         background-color: #446677;
         color: #ffffff;
       }
@@ -220,42 +220,88 @@
     <div id="contents">
       <form id="form">
         <div class="行">
-          <label>静止図形</label>
+          <label>静止円</label>
           <div class="項目群">
             <div class="項目">
-              <div class="入力枠"><input type="text" id="静止図形" /></div>
-              <button id="静止図形-submit">周長</button>
+              <div class="入力枠"><input type="text" id="周.0" /></div>
+              <button id="周.0.確定">周長</button>
             </div>
             <div class="項目">
-              <select id="静止図形-角数"></select>
-            </div>
-            <div class="項目">
-              <select id="静止図形-密度"></select>
+              <div class="入力枠"><input type="text" id="扁.0" /><span class="単位">%</span></div>
+              <button id="扁.0.確定">扁平率</button>
             </div>
           </div>
-          <div class="meter" id="静止図形-meter">
-            <div class="meter-handle" id="静止図形-meter-handle"></div>
+          <div class="meter" id="周.0.調整">
+            <div class="meter-handle" id="周.0.調整.handle"></div>
+          </div>
+          <div class="meter" id="扁.0.調整">
+            <div class="meter-handle" id="扁.0.調整.handle"></div>
           </div>
         </div>
         <div class="行">
-          <label>回転図形</label>
+          <label><input type="checkbox" id="効.1" value="1" checked disabled />回転円1</label>
           <div class="項目群">
             <div class="項目">
-              <div class="入力枠"><input type="text" id="回転図形" /></div>
-              <button id="回転図形-submit">周長</button>
+              <div class="入力枠"><input type="text" id="周.1" /></div>
+              <button id="周.1.確定">周長</button>
             </div>
             <div class="項目">
-              <select id="回転図形-角数"></select>
+              <div class="入力枠"><input type="text" id="扁.1" /><span class="単位">%</span></div>
+              <button id="扁.1.確定">扁平率</button>
             </div>
-            <div class="項目">
-              <select id="回転図形-密度"></select>
-            </div>
-            <div id="内外指定" data-内外="0">
+            <div class="内外指定" data-内外="0">
               <div data-値="0">内接</div><div data-値="1">外接</div>
             </div>
           </div>
-          <div class="meter" id="回転図形-meter">
-            <div class="meter-handle" id="回転図形-meter-handle"></div>
+          <div class="meter" id="周.1.調整">
+            <div class="meter-handle" id="周.1.調整.handle"></div>
+          </div>
+          <div class="meter" id="扁.1.調整">
+            <div class="meter-handle" id="扁.1.調整.handle"></div>
+          </div>
+        </div>
+        <div class="行">
+          <label><input type="checkbox" id="効.2" value="1" checked />回転円2</label>
+          <div class="項目群">
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="周.2" /></div>
+              <button id="周.2.確定">周長</button>
+            </div>
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="扁.2" /><span class="単位">%</span></div>
+              <button id="扁.2.確定">扁平率</button>
+            </div>
+            <div class="内外指定" data-内外="0">
+              <div data-値="0">内接</div><div data-値="1">外接</div>
+            </div>
+          </div>
+          <div class="meter" id="周.2.調整">
+            <div class="meter-handle" id="周.2.調整.handle"></div>
+          </div>
+          <div class="meter" id="扁.2.調整">
+            <div class="meter-handle" id="扁.2.調整.handle"></div>
+          </div>
+        </div>
+        <div class="行">
+          <label><input type="checkbox" id="効.3" value="1" checked />回転円3</label>
+          <div class="項目群">
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="周.3" /></div>
+              <button id="周.3.確定">周長</button>
+            </div>
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="扁.3" /><span class="単位">%</span></div>
+              <button id="扁.3.確定">扁平率</button>
+            </div>
+            <div class="内外指定" data-内外="0">
+              <div data-値="0">内接</div><div data-値="1">外接</div>
+            </div>
+          </div>
+          <div class="meter" id="周.3.調整">
+            <div class="meter-handle" id="周.3.調整.handle"></div>
+          </div>
+          <div class="meter" id="扁.3.調整">
+            <div class="meter-handle" id="扁.3.調整.handle"></div>
           </div>
         </div>
         <div class="行">
@@ -264,11 +310,11 @@
             <div id="focal-length-announcer-wrapper">
               <div class="項目">
                 <div class="入力枠"><input type="text" id="描画点距離" /></div>
-                <button type="button" id="描画点距離-submit">長さ</button>
+                <button type="button" id="描画点距離.確定">長さ</button>
               </div>
               <div class="項目">
                 <div class="入力枠"><input type="text" id="描画点角度" /><span class="単位">°</span></div>
-                <button type="button" id="描画点角度-submit">角度</button>
+                <button type="button" id="描画点角度.確定">角度</button>
               </div>
             </div>
             <div id="focal-length-operator-wrapper">
@@ -280,7 +326,7 @@
         <div class="行">
           <div class="項目">
             <div id="色入力枠" class="入力枠"><span class="単位">#</span><input type="text" id="色" /></div>
-            <button id="色-submit">線の色</button>
+            <button id="色.確定">線の色</button>
           </div>
           <div id="color-base-wrapper">
             <canvas id="color-base-screen" width="330" height="20"></canvas>
@@ -310,14 +356,12 @@
     </div>
     <script>
       const 実体対単位倍率 = Math.PI * 2 / 3;
-      const 回転進捗分割数 = 120;
-      const 図形周長下限 = 100;
-      const 図形周長上限 = 1000;
-      const 図形角数下限 = 2;
-      const 図形角数上限 = 9;
+      const 単位円径 = 200;
+      const 単位円周 = 600;
+      const 楕円解像度 = 240;
+      const 楕円解像単位角度 = Math.PI / 2 / 楕円解像度;
       const 表示枠幅 = 500;
       const 表示径 = 表示枠幅 / 2;
-      const 密度群 = {};
       const gaugeHeight = 30;
       const 表示統括枠実体 = document.getElementById('表示統括枠');
       const 表示枠実体 = document.getElementById('display-wrapper');
@@ -346,43 +390,34 @@
       const colorBalanceScreenContext = colorBalanceScreen.getContext('2d');
       const colorBalanceOperatorContext = colorBalanceOperator.getContext('2d');
 
-      const 入力実体群 = ['静止図形', '回転図形', '描画点距離', '描画点角度', '色'].reduce((elements, meterType) => ({
-        ...elements, [meterType]: {
-          input: document.getElementById(`${meterType}`),
-          submit: document.getElementById(`${meterType}-submit`),
+      const 入力名群 = Array(4).fill(['周', '扁']).flatMap((群, 設定番号) => 群.map((名) => `${名}.${設定番号}`));
+      const 入力実体群 = [...入力名群, '描画点距離', '描画点角度', '色'].reduce((elements, 実体名) => ({
+        ...elements, [実体名]: {
+          input: document.getElementById(実体名),
+          submit: document.getElementById(`${実体名}.確定`),
+          ...(実体名 === '周.2' ? { 有効: document.getElementById('効.2') } : {}),
+          ...(実体名 === '周.3' ? { 有効: document.getElementById('効.3') } : {}),
         },
       }), {});
-      const 調整実体群 = ['静止図形', '回転図形'].reduce((elements, meterType) => ({
-        ...elements, [meterType]: {
-          meter: document.getElementById(`${meterType}-meter`),
-          handle: document.getElementById(`${meterType}-meter-handle`),
-        },
-      }), {});
-      const [角数指定実体群, 密度指定実体群] = [
-        ['静止図形', '回転図形'].map((記号) => document.getElementById(`${記号}-角数`)),
-        ['静止図形', '回転図形'].map((記号) => document.getElementById(`${記号}-密度`)),
-      ];
-      const 密度候補実体群 = [[], []];
-      Array(図形角数上限 - 図形角数下限 + 1).fill(null).forEach((_, 角数係数) => {
-        const 角数 = 図形角数下限 + 角数係数;
-        密度群[角数] = Array(Math.floor(角数 / 2)).fill(null).flatMap((_, 数係数) => !数係数 || 角数 % (数係数 + 1) ? (数係数 + 1) : []);
-        角数指定実体群.forEach((角数指定実体, 担当) => {
-          const 角数候補実体 = document.createElement('option');
-          角数候補実体.value = 角数;
-          角数候補実体.innerText = `${角数}角`;
-          角数指定実体群[担当].appendChild(角数候補実体);
-          const 密度候補実体 = document.createElement('option');
-          密度候補実体.value = 角数 - 1;
-          密度候補実体.innerText = `密度:${角数 - 1}`;
-          密度候補実体群[担当].push(密度候補実体);
-        });
-      });
-      const 内外指定統括実体 = document.getElementById('内外指定');
+      const 調整実体群 = 入力名群.reduce((実体群, 実体名) => ({
+          ...実体群, [実体名]: {
+            meter: document.getElementById(`${実体名}.調整`),
+            handle: document.getElementById(`${実体名}.調整.handle`),
+          },
+        }), {});
+
+      const 描画設定 = {
+
+      };
+      const 補助円基本座標群 = Array(8).fill(null).map((_, 係数) => [
+        Math.sin(Math.PI / 4 * (係数 + 0.5)),
+        Math.cos(Math.PI / 4 * (係数 + 0.5)),
+      ]);
 
       表示枠実体.style.width = `${表示枠幅}px`;
       表示枠実体.style.height = `${表示枠幅}px`;
       counterGauge.style.width = `${表示枠幅}px`;
-      // counter.style.width = `${表示枠幅}px`;
+      counter.style.width = `${表示枠幅}px`;
       display.setAttribute('width', 表示枠幅);
       display.setAttribute('height', 表示枠幅);
       auxiliary.setAttribute('width', 表示枠幅);
@@ -407,26 +442,35 @@
       colorBalanceOperatorContext.strokeStyle = '#ffffff';
       colorBalanceOperatorContext.lineWidth = 2;
 
-      const 図形群 = [
-        { 周長: 600, 角数: 5, 密度: 2 },
-        { 周長: 160, 角数: 4, 密度: 1, 接地: 0 },
+      const 円群 = [
+        { 周: 350, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 扁平率: 0 },
+        { 周: 240, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 扁平率: 0, 接地: 0, 有効: true },
+        { 周: 150, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 扁平率: 0, 接地: 0, 有効: true },
+        { 周: 60, 近似周群: [], 単位長径: 1, 単位短径: 1, 長径: 1, 短径: 1, 扁平率: 0, 接地: 0, 有効: false },
       ];
       const 描画制御 = {
         動作: null,
+        記録対象1: null,
+        記録対象2: null,
+        記録: null,
         動作指示: false,
-        前回座標: null,
+        記録指示: false,
+        前回座標: [0, 0],
+        進捗: 0,
       };
       let 焦点距離率 = 0.8;
       let 焦点距離 = 0;
-      let 焦点角度 = 120 / 180 * Math.PI;
+      let 焦点主観角度 = 120 / 180 * Math.PI;
+      let 焦点客観角度 = 0;
       let meterHandleDiffX = 0;
       let meterSwitch = false;
+      let animationSwitch = false;
       let animation = null;
       let startedSwitch = false;
       let 予定時刻 = 0;
       let latestX = 0;
       let latestY = 0;
-      let 回転回数 = 1;
+      let timerMultiple = 1;
       let 単位実行時間 = 5;
       let strokeColorBase = 0.07;
       let strokeColorBalance = 0.8;
@@ -434,179 +478,242 @@
       let strokeColor = '000000';
       let 表示環境 = 1;
 
-      const 必要回転情報計算 = () => {
-        const [静止図形, 回転図形] = 図形群;
-        // 回転図形.環境位置 = (回転図形.接触段階 * 回転図形.周長 / 回転図形.角数) % 静止図形.辺長;
-        回転図形.環境位置 = (回転図形.接触段階 * 回転図形.周長 * 静止図形.角数) % (静止図形.周長 * 回転図形.角数) / (静止図形.角数 * 回転図形.角数);
-        回転図形.環境残辺長 = 静止図形.辺長 - 回転図形.環境位置;
-        const 回転図形残辺長 = 回転図形.辺長 - 回転図形.環境残辺長;
-        // 回転図形.回転必要追加回数 = Math.ceil(回転図形残辺長 / 静止図形.辺長) + (回転図形残辺長 % 静止図形.辺長 ? 0 : 1);
-        回転図形.回転必要追加回数 = Math.ceil((回転図形.周長 * 静止図形.角数 - 静止図形.周長 * 回転図形.角数 + 回転図形.環境位置 * 回転図形.角数 * 静止図形.角数) * 静止図形.角数 / (静止図形.周長 * 回転図形.角数 * 静止図形.角数)) + (((回転図形.周長 * 静止図形.角数) - 静止図形.周長 * 回転図形.角数 + (回転図形.接触段階 * 回転図形.周長 * 静止図形.角数) % (静止図形.周長 * 回転図形.角数)) % (静止図形.周長 * 回転図形.角数) ? 0 : 1);
-        回転図形.回転必要角度 = Math.PI - 回転図形.角度 * 2 + 回転図形.回転必要追加回数 * 静止図形.放射角度 * 2;
-        回転図形.回転必要進捗 = 回転進捗分割数 * 回転図形.回転必要角度 / Math.PI;
-        回転図形.環境段階 = Math.floor(回転図形.接触段階 * 回転図形.周長 * 静止図形.角数 / (静止図形.周長 * 回転図形.角数));
-        回転図形.環境段階角度 = 静止図形.放射角度 * 回転図形.環境段階 * 2 + Math.PI - 静止図形.角度;
-// console.log(`
-// 回転図形.環境位置: ${回転図形.環境位置}
-// 回転図形.環境残辺長: ${回転図形.環境残辺長}
-// 回転図形残辺長: ${回転図形残辺長}
-// 回転図形.回転必要追加回数: ${回転図形.回転必要追加回数}
-// ${
-// (回転図形.周長 * 静止図形.角数 - 静止図形.周長 * 回転図形.角数 + 回転図形.環境位置 * 回転図形.角数 * 静止図形.角数) * 静止図形.角数 / (静止図形.周長 * 回転図形.角数 * 静止図形.角数)
-// }
-// ${
-// + (回転図形.周長 * 静止図形.角数)
-// - 静止図形.周長 * 回転図形.角数
-// + (回転図形.接触段階 * 回転図形.周長 * 静止図形.角数) % (静止図形.周長 * 回転図形.角数)
-// } % ${
-// 静止図形.周長 * 回転図形.角数 / 静止図形.角数
-// }
-// 回転図形.回転必要角度: ${回転図形.回転必要角度 / Math.PI * 180}
-// 回転図形.回転必要進捗: ${回転図形.回転必要進捗}
-// 回転図形.環境段階: ${回転図形.環境段階}
-// 回転図形.環境段階角度: ${回転図形.環境段階角度 / Math.PI * 180}
-// `.trim());
+      const 楕円近似弧群定義 = () => {
+        const 有効円群 = 円群.filter((設定, 設定番号) => 設定番号 === 0 || 設定.有効);
+        有効円群.forEach((設定) => {
+          const 近似周係数1 = 2 - 設定.扁平率;
+          const 近似周係数2 = 3 * Math.pow(設定.扁平率 / 近似周係数1, 2);
+          const 近似周係数3 = Math.PI * 近似周係数1 * (1 + 近似周係数2 / (10 + Math.pow(4 - 近似周係数2, 1 / 2)));
+          設定.単位長径 = 設定.周 / 近似周係数3;
+          設定.単位短径 = 設定.単位長径 * (1 - 設定.扁平率);
+          設定.長径 = 設定.単位長径 * 単位円径 * Math.PI * 2 / 単位円周;
+          設定.短径 = 設定.単位短径 * 単位円径 * Math.PI * 2 / 単位円周;
+          設定.近似周群 = Array(楕円解像度).fill(null).reduce((群, _, 段階) => {
+            const WY = 設定.単位長径 * Math.cos(楕円解像単位角度 * (段階 + 1));
+            const WX = 設定.単位短径 * Math.sin(楕円解像単位角度 * (段階 + 1));
+            const WA = Math.pow(Math.pow(群[段階].WY - WY, 2) + Math.pow(WX - 群[段階].WX, 2), 1 / 2);
+
+            return [...群, { WY, WX, WA }];
+          }, [{ WY: 設定.単位長径, WX: 0, WA: 0 }]);
+        });
+
+        const 値1 = Math.sin(焦点主観角度) * 有効円群[有効円群.length - 1].短径 * 焦点距離率;
+        const 値2 = Math.cos(焦点主観角度) * 有効円群[有効円群.length - 1].長径 * 焦点距離率;
+        焦点距離 = Math.pow(値1 * 値1 + 値2 * 値2, 1 / 2);
+        焦点客観角度 = Math.acos(値2 / 焦点距離) * (値1 >= 0 ? 1 : -1);
       };
 
-      const 図形設定値定義 = () => {
-        図形群.forEach((図形, 担当) => {
-          密度候補実体群[担当].forEach((候補実体) => {
-            const 従属 = 候補実体.parentElement === 密度指定実体群[担当];
-            密度群[図形.角数].includes(parseInt(候補実体.value))
-              ? (従属 || 密度指定実体群[担当].appendChild(候補実体))
-              : (従属 && 密度指定実体群[担当].removeChild(候補実体));
-          });
-          if (!密度群[図形.角数].includes(図形.密度)) {
-            図形.密度 = 1;
-            密度指定実体群[担当].value = 1;
+      const 座標計算 = () => {
+        const 有効円群 = 円群.filter((設定, 設定番号) => 設定番号 === 0 || 設定.有効);
+        const 環境 = { 角度: 0, 座標: [0, 0] };
+        const 座標群 = [];
+
+        有効円群.forEach((設定, 設定番号) => {
+          const 進行長 = 描画制御.進捗 % 設定.周;
+          const 段階 = Math.floor(進行長 / (設定.周 / 4));
+          const 段階進行長 = 進行長 % (設定.周 / 4);
+
+          let LP = 0;
+          let WY = 0;
+
+          for (let j = 1; j <= 楕円解像度; j ++) {
+            const ELP = !(段階 % 2) ? 設定.近似周群[j] : 設定.近似周群[楕円解像度 - j];
+
+            if (LP + ELP.WA > 段階進行長) {
+              const 余剰係数 = (段階進行長 - LP) / ELP.WA;
+              WY = !(段階 % 2)
+                ? 設定.近似周群[j - 1].WY - (設定.近似周群[j - 1].WY - ELP.WY) * 余剰係数
+                : ELP.WY - (ELP.WY - (j < 楕円解像度 ? 設定.近似周群[楕円解像度 - j + 1].WY : 0)) * (1 - 余剰係数);
+
+              break;
+            }
+
+            LP += ELP.WA;
+            WY = ELP.WY;
           }
-          図形.角度 = Math.PI * (図形.角数 / 図形.密度 - 2) / 図形.角数 * 図形.密度 / 2;
-          図形.辺長 = 図形.周長 / 図形.角数;
-          図形.放射角度 = Math.PI / 図形.角数 * 図形.密度;
-          図形.径長 = 図形.辺長 / 2 / Math.sin(図形.放射角度);
-          図形.中心接線距離 = Math.cos(図形.放射角度) * 図形.径長;
-          if (担当) {
-            図形.接触段階 = 0;
-            図形.回転進捗 = 0;
-            // 図形.回転初期必要進捗 = 回転進捗分割数 * (Math.PI - 図形.角度 * 2) / Math.PI;
-            必要回転情報計算();
-            焦点距離 = 図形.径長 * 焦点距離率;
+
+          WY = Math.min(WY * 実体対単位倍率, 設定.長径);
+          WY *= [1, 2].includes(段階) ? -1 : 1;
+          WY *= (設定.接地) ? -1 : 1;
+
+          const RL2 = Math.pow(設定.長径, 2);
+          const RS2 = Math.pow(設定.短径, 2);
+          const WX = Math.pow((1 - WY * WY / RL2) * RS2, 1 / 2) * ([2, 3].includes(段階) ? -1 : 1) * (設定番号 % 2 ? 1 : -1);
+          const 接点距離 = Math.pow(WX * WX + WY * WY, 1 / 2);
+          const 接点角度 = Math.acos(WY / 接点距離) * (WX >= 0 ? 1 : -1);
+          const 接線X軸交点座標 = WX === 0 ? Infinity : (RS2 / WX);
+          const 接線Y軸交点座標 = WY === 0 ? Infinity : (RL2 / WY);
+          const 接線長 = Math.pow(Math.pow(接線X軸交点座標, 2) + Math.pow(接線Y軸交点座標, 2), 1 / 2);
+          const 接線角度 =
+            接線X軸交点座標 === Infinity ? (WY >= 0 ? 0 : Math.PI) :
+            接線Y軸交点座標 === Infinity ? (Math.PI / (WX >= 0 ? -2 : 2)) :
+            (接線X軸交点座標 >= 0 && 接線Y軸交点座標 >= 0) ? Math.acos(接線X軸交点座標 / 接線長) :
+            (接線X軸交点座標 >= 0 && 接線Y軸交点座標 < 0) ? Math.acos(接線X軸交点座標 * -1 / 接線長) :
+            (接線X軸交点座標 < 0 && 接線Y軸交点座標 < 0) ? (Math.acos(接線X軸交点座標 / 接線長) * -1) : (Math.acos(接線X軸交点座標 * -1 / 接線長) * -1);
+          if (設定番号 === 0) {
+            座標群.push({
+              X: 0,
+              Y: 0,
+              T: 0,
+              接点X: WX * -1,
+              接点Y: WY,
+            });
+            環境.座標[0] = WX * -1;
+            環境.座標[1] = WY;
+            環境.角度 = 接線角度 * -1;
+          } else {
+            座標群.push({
+              X: 環境.座標[0] - Math.sin(接点角度 - 接線角度 + 環境.角度 + (設定.接地 ? Math.PI : 0)) * 接点距離,
+              Y: 環境.座標[1] - Math.cos(接点角度 - 接線角度 + 環境.角度 + (設定.接地 ? Math.PI : 0)) * 接点距離,
+              T: 環境.角度 - 接線角度 + (設定.接地 ? Math.PI : 0),
+            });
+            if (設定番号 < 有効円群.length - 1) {
+              環境.座標[0] = 座標群[設定番号].X - Math.sin(環境.角度 - 接線角度 + Math.PI - 接点角度) * 接点距離 * (設定.接地 ? -1 : 1);
+              環境.座標[1] = 座標群[設定番号].Y - Math.cos(環境.角度 - 接線角度 + Math.PI - 接点角度) * 接点距離 * (設定.接地 ? -1 : 1);
+              環境.角度 = 環境.角度 + Math.PI - (接線角度 - Math.PI / 2) * 2 + (設定.接地 ? Math.PI : 0);
+            }
           }
         });
-        set回転回数();
+
+        return 座標群;
       };
 
       const 描画 = () => {
-        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#cccccc' : '#888888';
-        const [静止図形, 回転図形] = 図形群;
+        const [静止円, ...回転円群] = 円群;
+        const 有効回転円群 = 回転円群.filter(({ 有効 }) => 有効);
+        const [静止円座標, ...座標群] = 座標計算();
+        const 円径係数 = 単位円径 * Math.PI * 2 / 単位円周;
+
         auxiliaryContext.clearRect(0, 0, 表示枠幅, 表示枠幅);
+        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#cccccc' : '#888888';
         auxiliaryContext.beginPath();
-        Array(静止図形.角数).fill(null).forEach((_, 角進捗) => {
-          const X = Math.sin(静止図形.放射角度 * 角進捗 * 2 + Math.PI) * 静止図形.径長;
-          const Y = Math.cos(静止図形.放射角度 * 角進捗 * 2 + Math.PI) * 静止図形.径長;
-          角進捗
-            ? auxiliaryContext.lineTo(X * 実体対単位倍率 + 表示径, Y * 実体対単位倍率 + 表示径)
-            : auxiliaryContext.moveTo(X * 実体対単位倍率 + 表示径, Y * 実体対単位倍率 + 表示径);
-        });
+        auxiliaryContext.ellipse(表示径 - 0.5, 表示径 - 0.5, 静止円.短径, 静止円.長径, 0, 0, Math.PI * 2);
         auxiliaryContext.closePath();
         auxiliaryContext.stroke();
-
-        // const 回転中心角度 = 回転図形.環境段階角度 + Math.PI / 回転進捗分割数 * 回転図形.回転進捗 + 回転図形.角度;
-        const 回転中心角度 = (回転図形.環境段階角度 + Math.PI / 回転進捗分割数 * 回転図形.回転進捗 + 回転図形.角度) + (回転図形.接地 ? Math.PI : 0);
-        const 回転追加段階 = Math.ceil(Math.max(Math.PI * 回転図形.回転進捗 / 回転進捗分割数 - (Math.PI - 回転図形.角度 * 2), 0) / (静止図形.放射角度 * 2));
-        const [回転中心座標X, 回転中心座標Y] = 回転追加段階
-          ? (() => {
-            const 環境第二段階角度 = 静止図形.放射角度 * (回転図形.環境段階 + 回転追加段階) * 2;
-            const 接触座標X = Math.sin(環境第二段階角度 + Math.PI) * 静止図形.径長;
-            const 接触座標Y = Math.cos(環境第二段階角度 + Math.PI) * 静止図形.径長;
-            const 回転中心距離 = Math.pow(Math.pow(回転図形.中心接線距離, 2) + Math.pow(回転図形.環境残辺長 + 静止図形.辺長 * (回転追加段階 - 1) - 回転図形.辺長 / 2, 2), 1 / 2);
-            const 接触第二段階角度 = Math.PI - Math.acos((回転図形.環境残辺長 + 静止図形.辺長 * (回転追加段階 - 1) - 回転図形.辺長 / 2) / 回転中心距離);
-            // const 回転中心第二段階角度 = 回転図形.環境段階角度 - 接触第二段階角度 + Math.PI / 回転進捗分割数 * (回転図形.回転進捗 - 回転進捗分割数 * (Math.PI - 回転図形.角度 * 2) / Math.PI);
-            const 回転中心第二段階角度 = 回転図形.環境段階角度 - 接触第二段階角度 * (回転図形.接地 ? -1 : 1) + Math.PI / 回転進捗分割数 * (回転図形.回転進捗 - 回転進捗分割数 * (Math.PI - 回転図形.角度 * 2) / Math.PI);
-            const 回転中心座標X = 接触座標X - Math.sin(回転中心第二段階角度) * 回転中心距離;
-            const 回転中心座標Y = 接触座標Y - Math.cos(回転中心第二段階角度) * 回転中心距離;
-            // const 回転中心座標X = 接触座標X + Math.sin(回転中心第二段階角度) * 回転中心距離 * (回転図形.接地 ? 1 : -1);
-            // const 回転中心座標Y = 接触座標Y + Math.cos(回転中心第二段階角度) * 回転中心距離 * (回転図形.接地 ? 1 : -1);
-            // const 回転中心座標X = 接触座標X - Math.sin(回転中心第二段階角度 + (回転図形.接地 ? Math.PI : 0)) * 回転中心距離;
-            // const 回転中心座標Y = 接触座標Y - Math.cos(回転中心第二段階角度 + (回転図形.接地 ? Math.PI : 0)) * 回転中心距離;
-
-            return [回転中心座標X, 回転中心座標Y];
-          })()
-          : (() => {
-            const 接触座標X = Math.sin(静止図形.放射角度 * 回転図形.環境段階 * 2 + Math.PI) * 静止図形.径長 + Math.sin(回転図形.環境段階角度 + Math.PI) * 回転図形.環境位置;
-            const 接触座標Y = Math.cos(静止図形.放射角度 * 回転図形.環境段階 * 2 + Math.PI) * 静止図形.径長 + Math.cos(回転図形.環境段階角度 + Math.PI) * 回転図形.環境位置;
-            // const 回転中心角度 = 回転図形.環境段階角度 + Math.PI / 回転進捗分割数 * 回転図形.回転進捗 + 回転図形.角度;
-            const 回転中心角度 = 回転図形.環境段階角度 + (Math.PI / 回転進捗分割数 * 回転図形.回転進捗 + 回転図形.角度) * (回転図形.接地 ? -1 : 1);
-            // const 回転中心角度 = 回転図形.環境段階角度 + (Math.PI / 回転進捗分割数 * 回転図形.回転進捗) * (回転図形.接地 ? -1 : 1) + 回転図形.角度;
-// console.log(`
-// ${(回転図形.環境段階角度 + Math.PI / 回転進捗分割数 * 回転図形.回転進捗 + 回転図形.角度) / Math.PI * 180}
-// ${(回転図形.環境段階角度 + (Math.PI / 回転進捗分割数 * 回転図形.回転進捗 + 回転図形.角度) * -1) / Math.PI * 180}
-// `.trim());
-            const 回転中心座標X = 接触座標X - Math.sin(回転中心角度 + Math.PI) * 回転図形.径長;
-            const 回転中心座標Y = 接触座標Y - Math.cos(回転中心角度 + Math.PI) * 回転図形.径長;
-            // const 回転中心座標X = 接触座標X + Math.sin(回転中心角度 + Math.PI) * 回転図形.径長 * (回転図形.接地 ? 1 : -1);
-            // const 回転中心座標Y = 接触座標Y + Math.cos(回転中心角度 + Math.PI) * 回転図形.径長 * (回転図形.接地 ? 1 : -1);
-            // const 回転中心座標X = 接触座標X - Math.sin(回転中心角度 + (回転図形.接地 ? 0 : Math.PI)) * 回転図形.径長;
-            // const 回転中心座標Y = 接触座標Y - Math.cos(回転中心角度 + (回転図形.接地 ? 0 : Math.PI)) * 回転図形.径長;
-
-            return [回転中心座標X, 回転中心座標Y];
-          })();
-        auxiliaryContext.beginPath();
-        Array(回転図形.角数).fill(null).forEach((_, 角進捗) => {
-          const X = 回転中心座標X + Math.sin(回転中心角度 + 回転図形.放射角度 * 角進捗 * 2 + Math.PI) * 回転図形.径長;
-          const Y = 回転中心座標Y + Math.cos(回転中心角度 + 回転図形.放射角度 * 角進捗 * 2 + Math.PI) * 回転図形.径長;
-          角進捗
-            ? auxiliaryContext.lineTo(X * 実体対単位倍率 + 表示径, Y * 実体対単位倍率 + 表示径)
-            : auxiliaryContext.moveTo(X * 実体対単位倍率 + 表示径, Y * 実体対単位倍率 + 表示径);
-        });
-        auxiliaryContext.closePath();
-        auxiliaryContext.stroke();
-        const 回転図形絶対角度 = 回転中心角度 + 回転図形.放射角度 * 2 * 回転図形.接触段階;
-        const 描画座標X = 回転中心座標X + Math.sin(回転図形絶対角度 + 焦点角度) * 焦点距離;
-        const 描画座標Y = 回転中心座標Y + Math.cos(回転図形絶対角度 + 焦点角度) * 焦点距離;
         auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#c0c0ee' : '#8080aa';
+        有効回転円群.forEach((設定, 設定番号) => {
+          const { X: CX, Y: CY, T: CT } = 座標群[設定番号];
+          const DX = CX + Math.sin(CT + 焦点客観角度) * 焦点距離;
+          const DY = CY + Math.cos(CT + 焦点客観角度) * 焦点距離;
+          const EXB = 設定.単位短径 * 円径係数;
+          const EYB = 設定.単位長径 * 円径係数;
+          auxiliaryContext.beginPath();
+          auxiliaryContext.ellipse(表示径 - CX, 表示径 + CY, 設定.短径, 設定.長径, CT, 0, Math.PI * 2);
+          auxiliaryContext.closePath();
+          auxiliaryContext.stroke();
+          補助円基本座標群.forEach(([X, Y]) => {
+            const EX = X * EXB;
+            const EY = Y * EYB;
+            const ER = Math.pow(EX * EX + EY * EY, 1 / 2);
+            const ET = Math.acos(EY / ER) * (EX >= 0 ? 1 : -1);
+            const EL = ER - EXB * 0.3;
+            auxiliaryContext.beginPath();
+            auxiliaryContext.arc(表示径 - CX - Math.sin(CT + ET) * EL, 表示径 + CY + Math.cos(CT + ET) * EL, EXB * 0.1, 0, Math.PI * 2);
+            auxiliaryContext.closePath();
+            auxiliaryContext.stroke();
+          });
+          if (設定番号 === 有効回転円群.length - 1) {
+            auxiliaryContext.beginPath();
+            auxiliaryContext.moveTo(表示径 - CX, 表示径 + CY);
+            auxiliaryContext.lineTo(表示径 - DX, 表示径 + DY);
+            auxiliaryContext.closePath();
+            auxiliaryContext.stroke();
+            if (描画制御.進捗 > 0) {
+              displayContext.strokeStyle = `#${strokeColor}`;
+              displayContext.beginPath();
+              displayContext.moveTo(表示径 - latestX, 表示径 + latestY);
+              displayContext.lineTo(表示径 - DX, 表示径 + DY);
+              displayContext.closePath();
+              displayContext.stroke();
+            }
+
+            latestX = DX;
+            latestY = DY;
+          }
+        });
+        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#aaaaff' : '#8888cc';
         auxiliaryContext.beginPath();
-        auxiliaryContext.moveTo(回転中心座標X * 実体対単位倍率 + 表示径, 回転中心座標Y * 実体対単位倍率 + 表示径);
-        auxiliaryContext.lineTo(描画座標X * 実体対単位倍率 + 表示径, 描画座標Y * 実体対単位倍率 + 表示径);
+        auxiliaryContext.moveTo(表示径, 表示径);
+        auxiliaryContext.lineTo(表示径 - 静止円座標.接点X, 表示径 + 静止円座標.接点Y);
+        auxiliaryContext.closePath();
         auxiliaryContext.stroke();
-        if (回転図形.接触段階 || 回転図形.回転進捗) {
-          displayContext.strokeStyle = `#${strokeColor}`;
-          displayContext.beginPath();
-          displayContext.moveTo(描画制御.前回座標[0] * 実体対単位倍率 + 表示径, 描画制御.前回座標[1] * 実体対単位倍率 + 表示径);
-          displayContext.lineTo(描画座標X * 実体対単位倍率 + 表示径, 描画座標Y * 実体対単位倍率 + 表示径);
-          displayContext.stroke();
-        }
-        描画制御.前回座標 = [描画座標X, 描画座標Y];
+        auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#ccccff' : '#aaaadd';
       };
 
-      const 動作 = () => {
-        const [静止図形, 回転図形] = 図形群;
-        回転図形.回転進捗 ++;
-        if (回転図形.回転進捗 >= 回転図形.回転必要進捗) {
-          回転図形.接触段階 ++;
-          回転図形.回転進捗 = 0;
-          必要回転情報計算();
-        }
+      const animate = () => {
         描画();
         counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
-        counterGaugeContext.fillRect(0, 0, 表示枠幅 * 回転図形.接触段階 / 回転回数, gaugeHeight);
-        counterAnnouncer.innerText = `${回転図形.接触段階} / ${回転回数}`;
-        if (回転図形.接触段階 >= 回転回数) {
+        counterGaugeContext.fillRect(0, 0, 表示枠幅 * 描画制御.進捗 / timerMultiple, gaugeHeight);
+        counterAnnouncer.innerText = `${描画制御.進捗} / ${timerMultiple}`;
+        if (描画制御.進捗 < timerMultiple) {
+          if (animationSwitch) {
+            描画制御.進捗 ++;
+            const 現在時刻 = (new Date()).getTime();
+            const 次回予定時刻 = Math.round(予定時刻 - (timerMultiple - 描画制御.進捗) * 単位実行時間);
+            const 次回実行時間 = Math.max(次回予定時刻 - 現在時刻, 1);
+            animation = setTimeout(animate, 次回実行時間);
+            // console.log(`${現在時刻} <> ${次回予定時刻} (${予定時刻} - (${timerMultiple} - ${timer}) * ${単位実行時間})`);
+// if (描画制御.進捗 === 1000) {
+// console.log(次回予定時刻 - 現在時刻);
+// }
+          }
+        } else {
           endExecution();
-        } else if (描画制御.動作指示) {
-          setTimeout(動作, 単位実行時間);
+
+          console.log('GGGG');
+          if (描画制御.記録指示) {
+
+            console.log('EEEE');
+
+            描画制御.記録.stop();
+            console.log('FFFF');
+
+
+
+            // function processMediaWhenStop(stream, onStop) {
+            //   const mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9") ? "video/webm; codecs=vp9" : "video/webm";
+            //   const mediaRecorder = new MediaRecorder(stream, { mimeType: mime })
+            //   // start record
+            //   const chunks = [];
+            //   mediaRecorder.addEventListener('dataavailable', e => chunks.push(e.data));
+
+            //   // call on stop callback
+            //   mediaRecorder.addEventListener('stop', async () => {
+            //     const blob = new Blob(chunks, { type: chunks[0].type });
+            //     await onStop(blob);
+            //   });
+
+            //   return mediaRecorder;
+            // }
+
+
+
+            // function downloadWebm(blob) {
+            //   const url = URL.createObjectURL(blob);
+            //   const a = document.createElement('a');
+            //   a.href = url;
+            //   a.download = 'video.webm';
+            //   a.click();
+            // }
+          }
         }
       };
 
       const startAnimation = () => {
         if (animation) clearInterval(animation);
-        描画制御.動作指示 = true;
-        動作();
+        animationSwitch = true;
+        予定時刻 = (new Date()).getTime() + 単位実行時間 * (timerMultiple - 描画制御.進捗);
+        console.log([
+          ...円群.flatMap((設定, 設定番号) => (設定番号 === 0 || 設定.有効) ? `${設定.周}-${設定.扁平率 * 100}` : []),
+          `${入力実体群.描画点距離.input.value}-${入力実体群.描画点角度.input.value}`,
+          入力実体群.色.input.value,
+        ].join('__'));
+        animate();
       };
 
       const stopAnimation = () => {
         if (animation) clearTimeout(animation);
-        描画制御.動作指示 = false;
+        animationSwitch = false;
       };
 
       const getMeterParams = (meterType) => {
@@ -620,14 +727,14 @@
       };
 
       const setMeterPosition = (meterType, percentage) => {
-        if (描画制御.動作指示) return;
+        if (animationSwitch) return;
 
         const { left, right } = getMeterParams(meterType);
         調整実体群[meterType].handle.style.left = `${Math.floor((right - left) * percentage)}px`;
       };
 
       const setMeterSwitch = (operate, clientX) => {
-        if (描画制御.動作指示 && operate) return;
+        if (animationSwitch && operate) return;
         meterSwitch = operate;
         if (operate === false) return;
         const meterHandleRect = 調整実体群[operate].handle.getBoundingClientRect();
@@ -639,62 +746,63 @@
         }
       };
 
-      const setMeterPercentage = (meterType, percentage) => {
-        if (描画制御.動作指示) return;
-        if (percentage < 0) percentage = 0;
-        if (percentage > 1) percentage = 1;
+      const setMeterLength = (meterType, clientX) => {
+        if (animationSwitch) return;
+        const { left, right } = getMeterParams(meterType);
+        let percentage = (clientX - meterHandleDiffX - left) / (right - left);
+        percentage = Math.min(Math.max(percentage, 0), 1);
         percentage = Math.floor(percentage * 100) / 100;
         setMeterPosition(meterType, percentage);
-        switch (meterType) {
-          case '静止図形':
-            図形群[0].周長 = Math.floor(図形周長下限 + percentage * (図形周長上限 - 図形周長下限));
-            入力実体群[meterType].input.value = 図形群[0].周長;
-            図形設定値定義();
+        const 照合 = meterType.match(/^(周|扁).([0-9]+)/);
+        const 設定番号 = parseInt(照合[2]);
+        switch (照合[1]) {
+          case '周':
+            円群[設定番号].周 = Math.floor(単位円周 / 10 + percentage * (単位円周 - 単位円周 / 10));
+            setTimerMultiple();
+            入力実体群[meterType].input.value = 円群[設定番号].周;
+            楕円近似弧群定義();
             break;
-          case '回転図形':
-            図形群[1].周長 = Math.floor(図形周長下限 + percentage * (図形周長上限 - 図形周長下限));
-            入力実体群[meterType].input.value = 図形群[1].周長;
-            図形設定値定義();
+          case '扁':
+            円群[設定番号].扁平率 = Math.floor(90 * percentage) / 100;
+            setTimerMultiple();
+            入力実体群[meterType].input.value = 円群[設定番号].扁平率 * 100;
+            楕円近似弧群定義();
             break;
-          default:
         }
         描画();
       };
 
-      const setMeterLength = (meterType, clientX) => {
-        if (描画制御.動作指示) return;
-        const { left, right } = getMeterParams(meterType);
-        const percentage = (clientX - meterHandleDiffX - left) / (right - left);
-        setMeterPercentage(meterType, percentage);
-      };
-
       const submitMeter = (meterType) => {
-        if (描画制御.動作指示) return;
+        if (animationSwitch) return;
         const inputValue = parseInt(入力実体群[meterType].input.value);
-        switch (meterType) {
-          case '静止図形':         
-            図形群[0].周長 = Math.max(Math.min(inputValue, 図形周長上限), 図形周長下限);
-            setMeterPosition(meterType, (図形群[0].周長 - 図形周長下限) / (図形周長上限 - 図形周長下限));
-            入力実体群[meterType].input.value = 図形群[0].周長;
-            図形設定値定義();
+        const 照合 = meterType.match(/^(周|扁|描画点距離|描画点角度|色)\.?([0-9]+)?/);
+        const 設定番号 = parseInt(照合?.[2] || '0');
+        switch (照合[1]) {
+          case '周':
+            円群[設定番号].周 = Math.max(Math.min(inputValue, 単位円周), 単位円周 / 10);
+            setMeterPosition(meterType, (円群[設定番号].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
+            入力実体群[meterType].input.value = 円群[設定番号].周;
+            楕円近似弧群定義();
+            setTimerMultiple();
             描画();
             break;
-          case '回転図形':
-            図形群[1].周長 = Math.max(Math.min(inputValue, 図形周長上限), 図形周長下限);
-            setMeterPosition(meterType, (図形群[1].周長 - 図形周長下限) / (図形周長上限 - 図形周長下限));
-            入力実体群[meterType].input.value = 図形群[1].周長;
-            図形設定値定義();
+          case '扁':
+            円群[設定番号].扁平率 = Math.max(Math.min(inputValue / 100, 0.9), 0);
+            setMeterPosition(meterType, 円群[設定番号].扁平率 / 0.9);
+            入力実体群[meterType].input.value = 円群[設定番号].扁平率 * 100;
+            楕円近似弧群定義();
+            setTimerMultiple();
             描画();
             break;
           case '描画点距離':
           case '描画点角度':
             if (meterType === '描画点角度') {
-              焦点角度 = inputValue / 180 * Math.PI;
+              焦点主観角度 = inputValue / 180 * Math.PI;
             } else {
               焦点距離率 = inputValue / 100;
             }
             display焦点距離();
-            図形設定値定義();
+            楕円近似弧群定義();
             描画();
             break;
           case '色':
@@ -739,24 +847,24 @@
         const Y = 60 - client.Y + operatorHandleRect.top;
         const R = Math.pow(X * X + Y * Y, 1 / 2);
         if (R > 50 && operate !== 'move') return;
-        焦点角度 = Math.acos(Y * -1 / R) * (X >= 0 ? 1 : -1);
+        焦点主観角度 = Math.acos(Y * -1 / R) * (X >= 0 ? 1 : -1);
         焦点距離率 = Math.min(R / 25, 2);
 
         display焦点距離();
-        図形設定値定義();
+        楕円近似弧群定義();
         描画();
       };
 
       const display焦点距離 = () => {
-        const X = Math.sin(焦点角度) * 焦点距離率 * 25;
-        const Y = Math.cos(焦点角度) * 焦点距離率 * -25;
+        const X = Math.sin(焦点主観角度) * 焦点距離率 * 25;
+        const Y = Math.cos(焦点主観角度) * 焦点距離率 * -25;
         焦点距離操作制御.clearRect(0, 0, 120, 120);
         焦点距離操作制御.setTransform(1, 0, 0, 1, 0, 0);
         焦点距離操作制御.beginPath();
         焦点距離操作制御.arc(60 - X, 60 - Y, 5, 0, Math.PI * 2);
         焦点距離操作制御.closePath();
         焦点距離操作制御.fill();
-        入力実体群.描画点角度.input.value = Math.round(焦点角度 / Math.PI * 180);
+        入力実体群.描画点角度.input.value = Math.round(焦点主観角度 / Math.PI * 180);
         入力実体群.描画点距離.input.value = Math.round(焦点距離率 * 100);
       };
 
@@ -914,10 +1022,11 @@
 
       const 素因数分解 = (分子, 分母, 指数 = 0) => 分子 % 分母 ? [分子, 指数] : 素因数分解(分子 / 分母, 分母, 指数 + 1);
 
-      const set回転回数 = () => {
-        const 公倍数群 = 図形群.map(({ 周長 }) => 周長).reduce((群, 周長) => {
+      const setTimerMultiple = () => {
+        const 有効円群 = 円群.filter((設定, 設定番号) => 設定番号 === 0 || 設定.有効);
+        const 公倍数群 = 有効円群.map(({ 周 }) => 周).reduce((群, 周) => {
           try {
-            Array(周長 - 1).fill(null).reduce((分子, _, 分母係数) => {
+            Array(周 - 1).fill(null).reduce((分子, _, 分母係数) => {
               const [残数, 指数] = 素因数分解(分子, 分母係数 + 2);
               if (指数) {
                 群[分母係数 + 2] = Math.max(群[分母係数 + 2] ?? 0, 指数);
@@ -930,16 +1039,24 @@
               }
 
               return 残数;
-            }, 周長);
+            }, 周);
           } catch (_) {
           }
 
           return 群;
         }, {});
-        const 回転長 = Object.keys(公倍数群).reduce((値, 係数) => 値 * Math.pow(係数, 公倍数群[係数]), 1);
-        const [静止図形, 回転図形] = 図形群;
-        回転回数 = 回転長 / 回転図形.周長 * 回転図形.角数;
-        counterAnnouncer.innerText = `0 / ${回転回数}`;
+        timerMultiple = Object.keys(公倍数群).reduce((値, 係数) => 値 * Math.pow(係数, 公倍数群[係数]), 1);
+        if (
+          有効円群.length > 2 &&
+          !((timerMultiple / 2) % 有効円群[0].周) &&
+          !((timerMultiple / 2) % 有効円群[2].周) &&
+          ((timerMultiple / 2) % 有効円群[1].周 === 有効円群[1].周 / 2)
+        ) {
+          timerMultiple /= 2;
+        }
+        counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
+        // counterAnnouncer.innerText = `0 / ${timerMultiple}`;
+        counterAnnouncer.innerText = `${timerMultiple} (${Math.ceil(timerMultiple * 単位実行時間 / 10) / 100}秒)`;
       }
 
       const startExecution = () => {
@@ -954,7 +1071,7 @@
         pauseButton.disabled = false;
         deleteButton.disabled = false;
         counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
-        counterAnnouncer.innerText = `0 / ${回転回数}`;
+        counterAnnouncer.innerText = `0 / ${timerMultiple}`;
       };
 
       const endExecution = () => {
@@ -962,10 +1079,7 @@
         stopAnimation();
         auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
         auxiliaryContext.clearRect(0, 0, 表示枠幅, 表示枠幅);
-        描画制御.前回座標 = null;
-        図形群[1].接触段階 = 0;
-        図形群[1].回転進捗 = 0;
-        必要回転情報計算();
+        描画制御.進捗 = 0;
         Object.keys(調整実体群).forEach((meterKey) => {
           入力実体群[meterKey].input.disabled = false;
           入力実体群[meterKey].submit.disabled = false;
@@ -975,7 +1089,7 @@
       };
 
       const pause = () => {
-        if (!描画制御.動作指示) {
+        if (!animationSwitch) {
           startAnimation();
           pauseButton.innerText = '停止';
         } else {
@@ -992,7 +1106,78 @@
         pauseButton.disabled = true;
         deleteButton.disabled = true;
         counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
-        counterAnnouncer.innerText = `0 / ${回転回数}`;
+        counterAnnouncer.innerText = `0 / ${timerMultiple}`;
+      };
+
+      const 動画 = async () => {
+        // mediaStreamの取得(video/canvas)
+        描画制御.記録対象1 = display.captureStream();
+        描画制御.記録対象2 = auxiliary.captureStream();
+        描画制御.記録指示 = true;
+        startAnimation();
+        // mediaStreamの取得(画面キャプチャー)
+        // stream = await navigator.mediaDevices.getDisplayMedia();
+        // mediaStreamの取得(Webカメラ)
+        // stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+        const mediaStream = new MediaStream();
+        // それぞれのストリーム内にあるトラックを取り出して、同じストリームに混ぜる
+        [描画制御.記録対象2, 描画制御.記録対象1].forEach((記録対象) => {
+          記録対象.getTracks().forEach((track) => mediaStream.addTrack(track));
+        });
+
+        console.log('AAAA');
+        // const mimeType = MediaRecorder.isTypeSupported("video/webm; codecs=vp9") ? "video/webm; codecs=vp9" : "video/webm";
+        // 描画制御.記録 = new MediaRecorder(描画制御.記録対象, { mimeType });
+        描画制御.記録 = new MediaRecorder(mediaStream);
+        // start record
+        const chunks = [];
+        // 描画制御.記録.addEventListener('dataavailable', e => chunks.push(e.data));
+        描画制御.記録.addEventListener('dataavailable', (e) => {
+          console.log('SSSS');
+          chunks.push(e.data);
+        });
+        描画制御.記録.start();
+
+        console.log('BBBB');
+        // call on stop callback
+        描画制御.記録.addEventListener('stop', () => {
+          console.log('CCCC');
+          const blob = new Blob(chunks, { type: chunks[0].type });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'video.webm';
+          a.click();
+          console.log('DDDD');
+        });
+        // function processMediaWhenStop(stream, onStop) {
+        //   const mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9") ? "video/webm; codecs=vp9" : "video/webm";
+        //   const mediaRecorder = new MediaRecorder(stream, { mimeType: mime })
+        //   // start record
+        //   const chunks = [];
+        //   mediaRecorder.addEventListener('dataavailable', e => chunks.push(e.data));
+
+        //   // call on stop callback
+        //   mediaRecorder.addEventListener('stop', async () => {
+        //     const blob = new Blob(chunks, { type: chunks[0].type });
+        //     await onStop(blob);
+        //   });
+
+        //   return mediaRecorder;
+        // }
+
+
+
+        // function downloadWebm(blob) {
+        //   const url = URL.createObjectURL(blob);
+        //   const a = document.createElement('a');
+        //   a.href = url;
+        //   a.download = 'video.webm';
+        //   a.click();
+        // }
+
+
       };
 
       document.onkeydown = (event) => {
@@ -1002,7 +1187,7 @@
           if (Object.keys(入力実体群).includes(elementId)) {
             submitMeter(elementId);
           }
-        } else if (!startedSwitch && !描画制御.動作指示) {
+        } else if (!startedSwitch && !animationSwitch) {
           startExecution();
         } else {
           pause();
@@ -1018,26 +1203,10 @@
         入力実体群[meterKey].submit.onclick = () => submitMeter(meterKey);
       });
 
-      角数指定実体群.forEach((角数指定実体, 担当) => {
-        角数指定実体.addEventListener('change', (現象) => {
-          図形群[担当].角数 = parseInt(角数指定実体.value);
-          図形設定値定義();
-          描画();
-        });
-      });
-
-      密度指定実体群.forEach((密度指定実体, 担当) => {
-        密度指定実体.addEventListener('change', (現象) => {
-          図形群[担当].密度 = parseInt(密度指定実体.value);
-          図形設定値定義();
-          描画();
-        });
-      });
-
       const documentMousemove = (event) => {
         switch (meterSwitch) {
           case 'focal-length':
-            if (描画制御.動作指示 || !meterSwitch) return;
+            if (animationSwitch || !meterSwitch) return;
             set焦点距離(event, 'move');
             break;
           case 'color-base':
@@ -1047,7 +1216,7 @@
             setColorBalance(event, 'move');
             break;
           default:
-            if (描画制御.動作指示 || !meterSwitch) return;
+            if (animationSwitch || !meterSwitch) return;
             const { X } = getClientPosition(event);
             setMeterLength(meterSwitch, X);
         }
@@ -1062,16 +1231,6 @@
         表示統括枠実体.dataset.環境 = 表示環境;
       };
 
-      内外指定統括実体.querySelectorAll('div').forEach((内外指定実体) => {
-        const 内外指定 = parseInt(内外指定実体.dataset.値);
-        内外指定実体.addEventListener('click', () => {
-          図形群[1].接地 = 内外指定;
-          内外指定統括実体.dataset.内外 = `${内外指定}`;
-          図形設定値定義();
-          描画();
-        });
-      });
-
       if (typeof document.ontouchmove === 'object') {
         document.ontouchmove = documentMousemove;
       } else {
@@ -1079,7 +1238,7 @@
       }
 
       executeButton.onclick = () => {
-        if (描画制御.動作指示) return;
+        if (animationSwitch) return;
         startExecution();
       };
 
@@ -1092,7 +1251,7 @@
       };
 
       焦点距離Operator.onmousedown = (event) => {
-        if (描画制御.動作指示 || meterSwitch) return;
+        if (animationSwitch || meterSwitch) return;
         meterSwitch = 'focal-length';
         set焦点距離(event, 'set');
       };
@@ -1109,37 +1268,46 @@
         setColorBalance(event, 'set');
       };
 
+      Array(2).fill(null).forEach((_, 設定番号係数) => {
+        入力実体群[`周.${設定番号係数 + 2}`].有効.addEventListener('change', (状況) => {
+          円群[設定番号係数 + 2].有効 = 状況.target.checked;
+          setTimerMultiple();
+          楕円近似弧群定義();
+          描画();
+        });
+      });
+
+      document.querySelectorAll('.内外指定').forEach((内外指定統括実体, 番号係数) => {
+        内外指定統括実体.querySelectorAll('div').forEach((内外指定実体) => {
+          const 内外指定 = parseInt(内外指定実体.dataset.値);
+          内外指定実体.addEventListener('click', () => {
+            円群[番号係数 + 1].接地 = 内外指定;
+            内外指定統括実体.dataset.内外 = `${内外指定}`;
+            楕円近似弧群定義();
+            描画();
+          });
+        });
+      });
+
       form.onsubmit = () => false;
 
-      図形設定値定義();
-// 図形群[0].周長 = 200;
-// 図形群[0].角数 = 4;
-// 図形群[0].密度 = 1;
-// 図形群[1].周長 = 110;
-// 図形群[1].角数 = 3;
-// 図形群[1].密度 = 1;
-// 図形設定値定義();
-// 図形群[1].接触段階 = 14;
-// // 図形群[1].回転進捗 = 136;
-// // 描画制御.前回座標 = [7.16558463182929, -7.153126603603926];
-// 描画制御.前回座標 = [0, 0];
-// 単位実行時間 = 100;
-// 必要回転情報計算();
-      setMeterPosition('静止図形', (図形群[0].周長 - 図形周長下限) / (図形周長上限 - 図形周長下限));
-      setMeterPosition('回転図形', (図形群[1].周長 - 図形周長下限) / (図形周長上限 - 図形周長下限));
-      入力実体群['静止図形'].input.value = 図形群[0].周長;
-      入力実体群['回転図形'].input.value = 図形群[1].周長;
-      角数指定実体群[0].value = 図形群[0].角数;
-      角数指定実体群[1].value = 図形群[1].角数;
-      密度指定実体群[0].value = 図形群[0].密度;
-      密度指定実体群[1].value = 図形群[1].密度;
-      内外指定統括実体.dataset.内外 = `${図形群[1].接地}`;
+      Array(4).fill(null).forEach((_, 設定番号) => {
+        setMeterPosition(`周.${設定番号}`, (円群[設定番号].周 - 単位円周 / 10) / (単位円周 - 単位円周 / 10));
+        setMeterPosition(`扁.${設定番号}`, 円群[設定番号].扁平率);
+        入力実体群[`周.${設定番号}`].input.value = 円群[設定番号].周;
+        入力実体群[`扁.${設定番号}`].input.value = 円群[設定番号].扁平率 * 100;
+        if (設定番号 >= 2) {
+          入力実体群[`周.${設定番号}`].有効.checked = 円群[設定番号].有効;
+        }
+      });
+      楕円近似弧群定義();
       display焦点距離();
       initColor();
       displayColorBase();
       displayColorBalance();
       pauseButton.disabled = true;
       deleteButton.disabled = true;
+      setTimerMultiple();
       描画();
     </script>
   </body>

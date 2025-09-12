@@ -1,0 +1,1170 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overscroll-behavior-x: none;
+        overscroll-behavior-y: none;
+      }
+      #contents {
+        display: flex;
+        align-items: flex-start;
+        margin: 10px;
+      }
+      #表示統括枠[data-環境="2"] {
+        background-color: #000000;
+      }
+      #form {
+        margin-right: 10px;
+        width: 360px;
+        padding: 5px 5px 0 5px;
+        border: solid 1px #aaaaaa;
+        box-sizing: border-box;
+        font-size: 12px;
+      }
+      .行 {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        list-style: none;
+        margin: 0 0 5px 0;
+        padding: 5px;
+        background-color: #eeeeff;
+      }
+      .行 .operator {
+        display: flex;
+        align-items: center;
+      }
+      .行 label {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .行 label input {
+        margin: 0;
+      }
+      .入力枠 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: solid 1px #a0a0a0;
+        border-radius: 2px;
+        margin-right: 5px;
+        width: 50px;
+        background-color: #ffffff;
+      }
+      #色入力枠 {
+        width: 80px;
+      }
+      .入力枠 input {
+        display: block;
+        border: none;
+        outline: none;
+        width: 100%;
+      }
+      .入力枠:focus-within {
+        border-color: #4f7df3;
+      }
+      .単位 {
+        display: inline-block;
+        padding: 0 1px;
+      }
+      #form .submit-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0 5px 0;
+        padding-top: 5px;
+        border-top: solid 1px #dddddd;
+      }
+      #form .submit-row button {
+        margin: 0 5px;
+      }
+      .meter {
+        position: relative;
+        height: 24px;
+        margin-top: 5px;
+      }
+      .meter::before {
+        content: "";
+        position: absolute;
+        display: block;
+        width: 100%;
+        height: 1px;
+        top: 50%;
+        border-top: solid 1px #aaaaaa;
+      }
+      .meter-handle {
+        position: absolute;
+        top: 0;
+        width: 10px;
+        height: calc(100% - 2px);
+        border: solid 1px #888888;
+        background-color: #ffffff;
+        cursor: pointer;
+      }
+      #display-wrapper {
+        position: relative;
+        border: solid 1px #aaaaaa;
+      }
+      #display,
+      #auxiliary-line,
+      #focal-length-screen,
+      #focal-length-operator {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      #focal-length-wrapper {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 0 10px;
+        margin: 0;
+        padding: 0;
+      }
+      #focal-length-wrapper label {
+        grid-column: 1;
+      }
+      #focal-length-announcer-wrapper {
+        grid-column: 1;
+        grid-row: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        line-height: 24px;
+        gap: 4px;
+      }
+      #focal-length-operator-wrapper {
+        grid-column: 2;
+        grid-row: 1 / 3;
+        position: relative;
+        width: 120px;
+        height: 120px;
+      }
+      #focal-length-announcer-wrapper div {
+        white-space: nowrap;
+      }
+      #color-base-wrapper,
+      #color-balance-wrapper {
+        position: relative;
+        margin: 5px auto 0;
+        width: 330px;
+      }
+      #color-base-wrapper {
+        height: 20px;
+      }
+      #color-balance-wrapper {
+        height: 70px;
+      }
+      #color-base-wrapper canvas,
+      #color-balance-wrapper canvas {
+        position: absolute;
+      }
+      #counter {
+        position: relative;
+        height: 30px;
+        padding: 0;
+        border-right: solid 1px #aaaaaa;
+        border-bottom: solid 1px #aaaaaa;
+        border-left: solid 1px #aaaaaa;
+      }
+      #announcer {
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 5px;
+        text-align: right;
+      }
+      #表示統括枠[data-環境="2"] #announcer {
+        color: #ffffff;
+      }
+      #gauge {
+        position: absolute;
+        left: 0;
+      }
+      .項目群 {
+        display: flex;
+        gap: 16px;
+      }
+      .項目 {
+        display: flex;
+      }
+      .内外指定 {
+        display: flex;
+        border: solid 1px #767676;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .内外指定 div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px;
+        background-color: #ffffff;
+        cursor: pointer;
+      }
+      .内外指定[data-内外="0"] div[data-値="0"],
+      .内外指定[data-内外="1"] div[data-値="1"] {
+        background-color: #446677;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="contents">
+      <form id="form">
+        <div class="行">
+          <label>静止円</label>
+          <div class="項目">
+            <div class="入力枠"><input type="text" id="静止円-周長" /></div>
+            <button id="静止円-周長-submit">周長</button>
+          </div>
+          <div class="meter" id="静止円-周長-meter">
+            <div class="meter-handle" id="静止円-周長-meter-handle"></div>
+          </div>
+        </div>
+        <div class="行">
+          <label>回転図形</label>
+          <div class="項目群">
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="回転図形-周長-1" /></div>
+              <button id="回転図形-周長-1-submit">辺長1</button>
+            </div>
+            <div class="項目">
+              <div class="入力枠"><input type="text" id="回転図形-周長-2" /></div>
+              <button id="回転図形-周長-2-submit">辺長2</button>
+            </div>
+            <div class="内外指定" data-内外="0">
+              <div data-値="0">内接</div><div data-値="1">外接</div>
+            </div>
+          </div>
+          <div class="meter" id="回転図形-周長-1-meter">
+            <div class="meter-handle" id="回転図形-周長-1-meter-handle"></div>
+          </div>
+          <div class="meter" id="回転図形-周長-2-meter">
+            <div class="meter-handle" id="回転図形-周長-2-meter-handle"></div>
+          </div>
+        </div>
+        <div class="行">
+          <div id="focal-length-wrapper">
+            <label>描画点</label>
+            <div id="focal-length-announcer-wrapper">
+              <div class="項目">
+                <div class="入力枠"><input type="text" id="focal-length-P" /></div>
+                <button type="button" id="focal-length-P-submit">長さ</button>
+              </div>
+              <div class="項目">
+                <div class="入力枠"><input type="text" id="focal-length-T" /><span class="単位">°</span></div>
+                <button type="button" id="focal-length-T-submit">角度</button>
+              </div>
+            </div>
+            <div id="focal-length-operator-wrapper">
+              <canvas id="focal-length-screen" width="120" height="120"></canvas>
+              <canvas id="focal-length-operator" width="120" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="行">
+          <div class="項目">
+            <div id="色入力枠" class="入力枠"><span class="単位">#</span><input type="text" id="color" /></div>
+            <button id="color-submit">線の色</button>
+          </div>
+          <div id="color-base-wrapper">
+            <canvas id="color-base-screen" width="330" height="20"></canvas>
+            <canvas id="color-base-operator" width="330" height="20"></canvas>
+          </div>
+          <div id="color-balance-wrapper">
+            <canvas id="color-balance-screen" width="330" height="70"></canvas>
+            <canvas id="color-balance-operator" width="330" height="70"></canvas>
+          </div>
+        </div>
+        <div class="行" id="反射-wrapper">
+          <label><input type="radio" name="反射" id="反射-0" value="1" checked />折り返す</label>
+          <label><input type="radio" name="反射" id="反射-1" value="0" />折り返さない</label>
+        </div>
+        <div class="submit-row">
+          <button id="execute">描画開始</button>
+          <button id="pause">停止</button>
+          <button id="delete">削除</button>
+        </div>
+      </form>
+      <div id="表示統括枠" data-環境="1">
+        <div id="display-wrapper">
+          <canvas id="auxiliary"></canvas>
+          <canvas id="display"></canvas>
+        </div>
+        <div id="counter">
+          <canvas id="gauge"></canvas>
+          <div id="announcer"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const 静止円基本単位径 = 200;
+      const 静止円基本周長 = 600;
+      const 実体対単位倍率 = 静止円基本単位径 * 2 * Math.PI / 静止円基本周長;
+      const 回転単位角度分母 = 240;
+      const ellipseResolution = 240;
+      const displaySize = 500;
+      const displayRadius = displaySize / 2;
+      const gaugeHeight = 30;
+      const displayWrapper = document.getElementById('display-wrapper');
+      const display = document.getElementById('display');
+      const auxiliary = document.getElementById('auxiliary');
+      const focalLengthScreen = document.getElementById('focal-length-screen');
+      const focalLengthOperator = document.getElementById('focal-length-operator');
+      const focalLengthAnnouncerT = document.getElementById('focal-length-announcer-T');
+      const focalLengthAnnouncerP = document.getElementById('focal-length-announcer-P');
+      const colorBaseScreen = document.getElementById('color-base-screen');
+      const colorBaseOperator = document.getElementById('color-base-operator');
+      const colorBalanceScreen = document.getElementById('color-balance-screen');
+      const colorBalanceOperator = document.getElementById('color-balance-operator');
+      const colorAnnouncer = document.getElementById('color-announcer');
+      const executeButton = document.getElementById('execute');
+      const pauseButton = document.getElementById('pause');
+      const deleteButton = document.getElementById('delete');
+      const counterAnnouncer = document.getElementById('announcer');
+      const counterGauge = document.getElementById('gauge');
+      const form = document.getElementById('form');
+      const 内外指定統括実体 = document.querySelector('.内外指定');
+      const 反射0 = document.getElementById('反射-0');
+      const 反射1 = document.getElementById('反射-1');
+      const displayContext = display.getContext('2d');
+      const auxiliaryContext = auxiliary.getContext('2d');
+      const focalLengthScreenContext = focalLengthScreen.getContext('2d');
+      const focalLengthOperatorContext = focalLengthOperator.getContext('2d');
+      const counterGaugeContext = counterGauge.getContext('2d');
+      const colorBaseScreenContext = colorBaseScreen.getContext('2d');
+      const colorBaseOperatorContext = colorBaseOperator.getContext('2d');
+      const colorBalanceScreenContext = colorBalanceScreen.getContext('2d');
+      const colorBalanceOperatorContext = colorBalanceOperator.getContext('2d');
+      const meterElements = ['静止円-周長', '回転図形-周長-1', '回転図形-周長-2'].reduce((elements, meterType) => ({
+        ...elements, [meterType]: {
+          meter: document.getElementById(`${meterType}-meter`),
+          handle: document.getElementById(`${meterType}-meter-handle`),
+        },
+      }), {});
+      const formElements = ['静止円-周長', '回転図形-周長-1', '回転図形-周長-2', 'focal-length-P', 'focal-length-T', 'color'].reduce((elements, inputType) => ({
+        ...elements, [inputType]: {
+          input: document.getElementById(`${inputType}`),
+          submit: document.getElementById(`${inputType}-submit`),
+        },
+      }), {});
+
+      displayWrapper.style.width = `${displaySize}px`;
+      displayWrapper.style.height = `${displaySize}px`;
+      counterGauge.style.width = `${displaySize}px`;
+      display.setAttribute('width', displaySize);
+      display.setAttribute('height', displaySize);
+      auxiliary.setAttribute('width', displaySize);
+      auxiliary.setAttribute('height', displaySize);
+      counterGauge.setAttribute('width', displaySize);
+      counterGauge.setAttribute('height', gaugeHeight);
+      counterGaugeContext.fillStyle = '#66cc66';
+      focalLengthScreenContext.strokeStyle = '#880000';
+      focalLengthScreenContext.beginPath();
+      focalLengthScreenContext.arc(60, 60, 25, 0, Math.PI * 2);
+      focalLengthScreenContext.closePath();
+      focalLengthScreenContext.stroke();
+      focalLengthScreenContext.strokeStyle = '#dd7777';
+      focalLengthScreenContext.beginPath();
+      focalLengthScreenContext.arc(60, 60, 50, 0, Math.PI * 2);
+      focalLengthScreenContext.closePath();
+      focalLengthScreenContext.stroke();
+      focalLengthOperatorContext.strokeStyle = '#aa0000';
+      colorBaseOperatorContext.strokeStyle = '#ffffff';
+      colorBaseOperatorContext.fillStyle = '#ffffff';
+      colorBaseOperatorContext.lineWidth = 2;
+      colorBalanceOperatorContext.strokeStyle = '#ffffff';
+      colorBalanceOperatorContext.lineWidth = 2;
+
+      let 静止円周長 = 静止円基本周長;
+      let 静止円径 = 静止円基本単位径;
+      let 回転図形周長1 = 100;
+      let 回転図形周長2 = 80;
+      let focalLengthPercentage = 0.5;
+      let focalTheta = 60 / 180 * Math.PI;
+      let focalLength = 0;
+      let focalAngle = 0;
+      let tangentVector = 1;
+      let meterHandleDiffX = 0;
+      let meterSwitch = false;
+      let animationSwitch = false;
+      let animation = null;
+      let startedSwitch = false;
+      let latestX = 0;
+      let latestY = 0;
+      let 回転進捗 = 0;
+      let 回転必要回数 = 1;
+      let 総必要進捗 = 1;
+      let 進行状態 = '転換1';
+      let 接着進捗 = 0;
+      let 接着必要進捗 = 1;
+      let 転換必要進捗 = 1;
+      let 転換進捗 = 0;
+      let 反射 = true;
+      let 単位実行時間 = 5;
+      let 予定時刻 = 0;
+      let strokeColorBase = 0.07;
+      let strokeColorBalance = 0.8;
+      let strokeColorSaturation = 0.9;
+      let strokeColor = '#000000';
+      const 回転情報 = {};
+
+      const 回転図形設定値定義 = () => {
+        // 回転図形辺周長 = 回転図形周長1 / 回転図形角数;
+        // const 回転図形角度 = Math.PI / 回転図形角数;
+        // if (反射) {
+        //   const 静止円単位半角度 = 回転図形辺周長 / 静止円周長 * Math.PI;
+        //   const 静止円単位径 = 静止円周長 / 2 / Math.PI;
+        //   const 回転図形単位辺長 = Math.sin(静止円単位半角度) * 静止円単位径;
+        //   const 回転図形内角度 = Math.PI * (回転図形角数 - 2) / 回転図形角数;
+        //   回転図形外接半径 = 回転図形単位辺長 / Math.sin(回転図形角度) * 実体対単位倍率;
+        //   回転図形回転角度 = 回転図形内角度 + (Math.PI / 2 - 静止円単位半角度 - 回転図形内角度) * 2;
+        //   回転図形転換初期角度 = 静止円単位半角度;
+        // } else {
+        //   回転図形外接半径 = 回転図形辺周長 / Math.sin(回転図形角度) * 実体対単位倍率 / 2;
+        //   // 傾き転換する角度(∵直線上で多角形が1回転がる角)(回転図形回転角度): 180° - (((180° - (360° / 角数)) / 2) * 2)
+        //   //   = 180° - (180° - 360° / 角数) / 2 * 2
+        //   //   = 180° - (180° - 360° / 角数)
+        //   //   = 180° - 180° + 360° / 角数
+        //   //   = 360° / 角数
+        //   回転図形回転角度 = Math.PI * 2 / 回転図形角数;
+        //   回転図形転換初期角度 = 0;
+        // }
+        // 回転図形辺心距離 = 回転図形外接半径 * Math.cos(回転図形角度);
+        // 転換必要進捗 = Math.ceil(回転図形回転角度 * 回転単位角度分母 / Math.PI);
+        // 転換進捗 = 回転図形回転角度 * 回転単位角度分母 / (Math.PI * 2);
+
+        // const 数1 = Math.min(静止円周長, 回転図形周長1);
+        // const 数2 = Math.max(静止円周長, 回転図形周長1);
+        // const 最大公約数 = Array(数1).fill(null).map((_, i) => 数1 - i).find((i) => 数1 % i === 0 && 数2 % i === 0);
+        // 接着必要進捗 = 反射 ? 0 : Math.ceil(回転図形周長1 / 回転図形角数);
+        // 回転必要回数 = Math.ceil(数1 * 数2 * 回転図形角数 / (回転図形周長1 * 最大公約数));
+        // 総必要進捗 = 回転必要回数 * (接着必要進捗 + 転換必要進捗);
+        // const 総必要秒数 = Math.ceil(総必要進捗 * 単位実行時間 / 10) / 100;
+        // counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        // counterAnnouncer.innerText = `0 / ${総必要進捗}(${総必要秒数}秒)`;
+        
+        // const 回転図形角度 = Math.PI / 回転図形角数;
+        if (反射) {
+          const 静止円単位径 = 静止円周長 / (Math.PI * 2);
+          回転情報.辺 = [回転図形周長1, 回転図形周長2].map((周長) => ({
+            静止円中心角度: 周長 * Math.PI / 静止円周長,
+          }));
+          回転情報.辺.forEach((辺設定, 辺係数) => {
+            辺設定.辺径 = Math.sin(辺設定.静止円中心角度) * 静止円単位径 * 実体対単位倍率;
+          });
+          回転情報.回転必要角度 = Math.PI / 2 - 回転情報.辺[0].静止円中心角度 - 回転情報.辺[1].静止円中心角度;
+          回転情報.中心径 = Math.pow(Math.pow(回転情報.辺[0].辺径, 2) + Math.pow(回転情報.辺[1].辺径, 2), 1 / 2);
+          回転情報.中心角度 = Math.asin(回転情報.辺[0].辺径 / 回転情報.中心径);
+          転換必要進捗 = Math.ceil(回転情報.回転必要角度 * 回転単位角度分母 / Math.PI);
+          const 総辺長 = (回転図形周長1 + 回転図形周長2) * 2;
+          const 数1 = Math.min(静止円周長, 総辺長);
+          const 数2 = Math.max(静止円周長, 総辺長);
+          const 最大公約数 = Array(数1).fill(null).map((_, i) => 数1 - i).find((i) => 数1 % i === 0 && 数2 % i === 0);
+          回転必要回数 = Math.ceil(数1 * 数2 * 2 / (総辺長 * 最大公約数));
+          総必要進捗 = 回転必要回数 * 転換必要進捗 * 2;
+          const 総必要秒数 = Math.ceil(総必要進捗 * 単位実行時間 / 10) / 100;
+          counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+          counterAnnouncer.innerText = `0 / ${総必要進捗}(${総必要秒数}秒)`;
+        } else {
+        }
+
+      };
+
+      const drawStroke = (context, poses, strokeStyle = null) => {
+        if (strokeStyle) {
+          context.strokeStyle = strokeStyle;
+        }
+        context.beginPath();
+        poses.forEach(([X, Y], i) => {
+          i === 0
+            ? context.moveTo(displayRadius + X, displayRadius - Y)
+            : context.lineTo(displayRadius + X, displayRadius - Y);
+        });
+        context.closePath();
+        context.stroke();
+      };
+
+      const drawArc = (context, X, Y, R, BT, LT, strokeStyle = null) => {
+        if (strokeStyle) {
+          context.strokeStyle = strokeStyle;
+        }
+        context.beginPath();
+        context.arc(displayRadius + X, displayRadius - Y, R, BT - Math.PI, BT + LT - Math.PI);
+        context.closePath();
+        context.stroke();
+      };
+
+      const output = () => {
+        // let baseT = 0;
+        // let [OX, OY, RT] = [0, 0, 0];
+
+        // if (進行状態 === '接着') {
+        //   baseT = Math.PI * 2 * (回転図形辺周長 * (回転進捗 + 接着進捗 / 接着必要進捗)) / 静止円周長;
+        //   OX = Math.sin(baseT) * (静止円径 - 回転図形辺心距離 * tangentVector) + Math.cos(baseT) * (回転図形辺周長 / 2 - 接着進捗) * 実体対単位倍率;
+        //   OY = Math.cos(baseT) * (静止円径 - 回転図形辺心距離 * tangentVector) - Math.sin(baseT) * (回転図形辺周長 / 2 - 接着進捗) * 実体対単位倍率;
+        // } else {
+        //   baseT = Math.PI * 2 * (回転図形辺周長 * 回転進捗) / 静止円周長;
+        //   RT = 回転図形転換初期角度 + 転換進捗 * Math.PI / 回転単位角度分母;
+
+        //   const KT = tangentVector === 1
+        //     ? baseT - (RT - Math.PI / 回転図形角数) + Math.PI
+        //     : baseT + (RT - Math.PI / 回転図形角数);
+        //   OX = Math.sin(baseT) * 静止円径 + Math.sin(KT) * 回転図形外接半径;
+        //   OY = Math.cos(baseT) * 静止円径 + Math.cos(KT) * 回転図形外接半径;
+        // }
+
+        // RT += 回転図形角数 % 2 ? 0 : Math.PI / 回転図形角数;
+
+        // const SX = Math.sin(baseT) * 静止円径;
+        // const SY = Math.cos(baseT) * 静止円径;
+        // const X = OX - Math.sin(baseT - RT * tangentVector + focalTheta - Math.PI * 2 / 回転図形角数 * (回転進捗 - (進行状態 === '接着' ? 0 : 1)) * tangentVector) * 回転図形外接半径 * focalLengthPercentage;
+        // const Y = OY - Math.cos(baseT - RT * tangentVector + focalTheta - Math.PI * 2 / 回転図形角数 * (回転進捗 - (進行状態 === '接着' ? 0 : 1)) * tangentVector) * 回転図形外接半径 * focalLengthPercentage;
+
+        // auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
+        // auxiliaryContext.clearRect(0, 0, displaySize, displaySize);
+        // drawArc(auxiliaryContext, 0, 0, 静止円径, 0, Math.PI * 2, '#dddddd');
+        // if (!反射) {
+        //   drawStroke(auxiliaryContext, [[0, 0], [SX, SY]], '#dddddd');
+        // }
+        // auxiliaryContext.strokeStyle = '#ddddff';
+        // drawStroke(auxiliaryContext, Array(回転図形角数).fill(null).map((_, i) => [
+        //   OX - Math.sin(baseT - RT * tangentVector - Math.PI * 2 / 回転図形角数 * i) * tangentVector * 回転図形外接半径,
+        //   OY - Math.cos(baseT - RT * tangentVector - Math.PI * 2 / 回転図形角数 * i) * tangentVector * 回転図形外接半径,
+        // ]));
+        // Array(回転図形角数).fill(null).forEach((_, i) => {
+        //   const ARX = OX - Math.sin(baseT - RT * tangentVector + Math.PI * 2 / 回転図形角数 * i) * tangentVector * 回転図形外接半径 * 0.7;
+        //   const ARY = OY - Math.cos(baseT - RT * tangentVector + Math.PI * 2 / 回転図形角数 * i) * tangentVector * 回転図形外接半径 * 0.7;
+        //   drawArc(auxiliaryContext, ARX, ARY, 回転図形外接半径 * 0.1, 0, Math.PI * 2, '#ddddff');
+        // });
+        // drawStroke(auxiliaryContext, [[OX, OY], [X, Y]], '#ccccff');
+        // if (animationSwitch) {
+        //   displayContext.strokeStyle = strokeColor;
+        //   drawStroke(displayContext, [[latestX, latestY], [X, Y]]);
+        // }
+
+        // latestX = X;
+        // latestY = Y;
+
+
+        const 進捗位置 = 回転図形周長1 / 2 + (回転図形周長1 + 回転図形周長2) * 回転進捗 + (進行状態 === '転換2' ? 回転図形周長2 : 0);
+        const 進捗角度 = Math.PI * 2 * 進捗位置 / 静止円周長;
+        const 進捗座標X = Math.sin(進捗角度) * 静止円径 * -1;
+        const 進捗座標Y = Math.cos(進捗角度) * 静止円径 * -1;
+        const 中心基準角度 = 進行状態 === '転換2' ? Math.PI / 2 - 回転情報.中心角度 : 回転情報.中心角度;
+        const 中心転換角度 = Math.PI * 転換進捗 / 回転単位角度分母;
+        const 中心補正角度 = 回転情報.辺[進行状態 === '転換2' ? 1 : 0].静止円中心角度;
+        const 中心角度 = 中心基準角度 - 中心転換角度 + 進捗角度 - 中心補正角度;
+        const 中心座標X = 進捗座標X + Math.sin(中心角度) * 回転情報.中心径;
+        const 中心座標Y = 進捗座標Y + Math.cos(中心角度) * 回転情報.中心径;
+        const 座標群 = [
+          [進捗座標X, 進捗座標Y],
+          [中心座標X + Math.sin(中心角度 - 中心基準角度 * 2) * 回転情報.中心径, 中心座標Y + Math.cos(中心角度 - 中心基準角度 * 2) * 回転情報.中心径],
+          [中心座標X + Math.sin(中心角度) * 回転情報.中心径, 中心座標Y + Math.cos(中心角度) * 回転情報.中心径],
+          [中心座標X + Math.sin(中心角度 + (Math.PI / 2 - 中心基準角度) * 2) * 回転情報.中心径, 中心座標Y + Math.cos(中心角度 + (Math.PI / 2 - 中心基準角度) * 2) * 回転情報.中心径],
+        ];
+// console.log(`
+// 進捗位置: ${進捗位置}
+// 進捗座標: [${進捗座標X}, ${進捗座標Y}]
+// 中心座標: [${中心座標X}, ${中心座標Y}]
+// 回転情報.中心角度: ${Math.round(回転情報.中心角度 / Math.PI * 18000) / 100}
+// 進捗角度: ${Math.round(進捗角度 / Math.PI * 18000) / 100}
+// 中心角度: ${Math.round(中心角度 / Math.PI * 18000) / 100}
+// 　${Math.round((進行状態 === '転換2' ? Math.PI / 2 - 回転情報.中心角度 : 回転情報.中心角度) / Math.PI * 18000) / 100} - ${転換進捗} + ${Math.round(進捗角度 / Math.PI * 18000) / 100} - ${Math.round(回転情報.辺[0].静止円中心角度 / Math.PI * 18000) / 100}
+// `.trim());
+// console.log(`${回転進捗} : ${進行状態} : ${転換進捗}`);
+// console.log(`${Math.round(進捗角度 / Math.PI * 18000) / 100}`);
+        const 描画角度 = 進捗角度 - 中心転換角度 - 中心補正角度 - (進行状態 === '転換2' ? Math.PI / 2 : 0) + (回転進捗 % 2 ? Math.PI : 0) + focalTheta;
+        const X = 中心座標X + Math.sin(描画角度) * 回転情報.中心径 * focalLengthPercentage;
+        const Y = 中心座標Y + Math.cos(描画角度) * 回転情報.中心径 * focalLengthPercentage;
+        auxiliaryContext.clearRect(0, 0, displaySize, displaySize);
+        // drawStroke(auxiliaryContext, [[0, 0], [進捗座標X, 進捗座標Y]], '#ddddff');
+        // drawStroke(auxiliaryContext, [[進捗座標X, 進捗座標Y], [中心座標X, 中心座標Y]], '#ddddff');
+        drawStroke(auxiliaryContext, 座標群, '#ddddff');
+        drawArc(auxiliaryContext, 0, 0, 静止円径, 0, Math.PI * 2, '#dddddd');
+        drawStroke(auxiliaryContext, [[中心座標X, 中心座標Y], [X, Y]], '#ccccff');
+        if (animationSwitch) {
+          displayContext.strokeStyle = strokeColor;
+          drawStroke(displayContext, [[latestX, latestY], [X, Y]]);
+        }
+
+        latestX = X;
+        latestY = Y;
+
+
+      };
+
+      const animate = () => {
+        if (['接着1', '接着2'].includes(進行状態)) {
+          接着進捗 ++;
+          if (接着進捗 >= 接着必要進捗) {
+            接着進捗 = 接着必要進捗;
+            進行状態 = '転換';
+            if (!反射) {
+              回転進捗 ++;
+            }
+          }
+        } else {
+          転換進捗 ++;
+          if (転換進捗 >= 転換必要進捗) {
+            転換進捗 = 0;
+            接着進捗 = 0;
+            if (反射) {
+              if (進行状態 === '転換2') {
+                回転進捗 ++;
+                進行状態 = '転換1';
+              } else {
+                進行状態 = '転換2';
+              }
+            } else {
+              進行状態 = '接着';
+            }
+          }
+        }
+
+        output();
+
+        // const 総進捗 = 反射
+        //   ? (回転進捗 * (接着必要進捗 + 転換必要進捗) + 転換進捗 + 接着進捗)
+        //   : (回転進捗 * (接着必要進捗 + 転換必要進捗) + (
+        //       進行状態 === '接着'
+        //         ? (転換必要進捗 + 接着進捗)
+        //         : 転換進捗
+        //     ));
+        const 総進捗 = 回転進捗 * 転換必要進捗 * 2 + (進行状態 === '転換2' ? 転換必要進捗 : 0) + 転換進捗;
+        counterGaugeContext.setTransform(1, 0, 0, 1, 0, 0);
+        counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        counterGaugeContext.fillRect(0, 0, displaySize * 総進捗 / 総必要進捗, gaugeHeight);
+        counterAnnouncer.innerText = `${総進捗} / ${総必要進捗}`;
+        if (回転進捗 >= 回転必要回数) {
+          endExecution();
+        } else if (animationSwitch) {
+          const 現在時刻 = (new Date()).getTime();
+          const 次回予定時刻 = Math.round(予定時刻 - (総必要進捗 - 総進捗) * 単位実行時間);
+          const 次回実行時間 = Math.max(次回予定時刻 - 現在時刻, 1);
+          animation = setTimeout(animate, 次回実行時間);
+        }
+      };
+
+      const startAnimation = () => {
+        if (animation) clearInterval(animation);
+        const 総進捗 = 反射
+          ? (回転進捗 * (接着必要進捗 + 転換必要進捗) + 転換進捗 + 接着進捗)
+          : (回転進捗 * (接着必要進捗 + 転換必要進捗) + (
+              進行状態 === '接着'
+                ? (転換必要進捗 + 接着進捗)
+                : 転換進捗
+            ));
+        予定時刻 = (new Date()).getTime() + 単位実行時間 * (総必要進捗 - 総進捗);
+        animationSwitch = true;
+        animate();
+      };
+
+      const stopAnimation = () => {
+        if (animation) clearTimeout(animation);
+        animationSwitch = false;
+      };
+
+      const getMeterParams = (meterType) => {
+        const meterRect = meterElements[meterType].meter.getBoundingClientRect();
+        const meterHandleRect = meterElements[meterType].handle.getBoundingClientRect();
+
+        return {
+          left: meterRect.left + meterHandleRect.width / 2,
+          right: meterRect.left + meterRect.width - meterHandleRect.width / 2,
+        };
+      };
+
+      const setMeterPosition = (meterType, percentage) => {
+        if (animationSwitch) return;
+
+        const { left, right } = getMeterParams(meterType);
+        meterElements[meterType].handle.style.left = `${Math.floor((right - left) * percentage)}px`;
+      };
+
+      const setMeterSwitch = (operate, clientX) => {
+        if (animationSwitch && operate) return;
+        meterSwitch = operate;
+        if (operate === false) return;
+        const meterHandleRect = meterElements[operate].handle.getBoundingClientRect();
+        if (clientX >= meterHandleRect.left && clientX <= meterHandleRect.left + meterHandleRect.width) {
+          meterHandleDiffX = clientX - (meterHandleRect.left + meterHandleRect.width / 2);
+        } else {
+          meterHandleDiffX = 0;
+          setMeterLength(operate, clientX);
+        }
+      };
+
+      const setMeterPercentage = (meterType, percentage) => {
+        if (animationSwitch) return;
+        if (percentage < 0) percentage = 0;
+        if (percentage > 1) percentage = 1;
+        percentage = Math.floor(percentage * 100) / 100;
+        setMeterPosition(meterType, percentage);
+        switch (meterType) {
+          case '静止円-周長':
+            静止円周長 = Math.floor(静止円基本周長 / 10 + percentage * (静止円基本周長 - 静止円基本周長 / 10));
+            静止円径 = 静止円基本単位径 * 静止円周長 / 静止円基本周長;
+            formElements[meterType].input.value = 静止円周長;
+            break;
+          case '回転図形-周長-1':
+            回転図形周長1 = Math.floor(静止円基本周長 / 10 + percentage * (静止円基本周長 - 静止円基本周長 / 10));
+            formElements[meterType].input.value = 回転図形周長1;
+            break;
+          case '回転図形-周長-2':
+            回転図形周長2 = Math.floor(静止円基本周長 / 10 + percentage * (静止円基本周長 - 静止円基本周長 / 10));
+            formElements[meterType].input.value = 回転図形周長2;
+            break;
+          default:
+        }
+        回転図形設定値定義();
+        output();
+      };
+
+      const setMeterLength = (meterType, clientX) => {
+        if (animationSwitch) return;
+        const { left, right } = getMeterParams(meterType);
+        const percentage = (clientX - meterHandleDiffX - left) / (right - left);
+        setMeterPercentage(meterType, percentage);
+      };
+
+      const submitParam = (inputType) => {
+        if (animationSwitch) return;
+
+        if (inputType === 'color') {
+          const matched = formElements[inputType].input.value.match(/#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/i);
+          const [_, DR, DG, DB] = matched || ['', '00', '00', '00'];
+          formElements[inputType].input.value = `#${DR}${DG}${DB}`;
+          const realColors = [
+            { C: 'R', V: parseInt(DR, 16) / 255 },
+            { C: 'G', V: parseInt(DG, 16) / 255 },
+            { C: 'B', V: parseInt(DB, 16) / 255 },
+          ].sort((P1, P2) => P2.V - P1.V);
+          strokeColorBalance = realColors[0].V;
+          strokeColorSaturation = 1 - (realColors[2].V / (strokeColorBalance || 1));
+          strokeColorBase = (() => {
+            const P = 1 - (1 - realColors[1].V / (strokeColorBalance || 1)) / (strokeColorSaturation || 1);
+            switch (true) {
+              case realColors[0].C === 'R' && realColors[1].C === 'B':
+                return 1 / 6 * (0 + P);
+              case realColors[0].C === 'B' && realColors[1].C === 'R':
+                return 1 / 6 * (2 - P);
+              case realColors[0].C === 'B' && realColors[1].C === 'G':
+                return 1 / 6 * (2 + P);
+              case realColors[0].C === 'G' && realColors[1].C === 'B':
+                return 1 / 6 * (4 - P);
+              case realColors[0].C === 'G' && realColors[1].C === 'R':
+                return 1 / 6 * (4 + P);
+              default:
+                return 1 / 6 * (6 - P);
+            }
+          })();
+          displayColorBase();
+          displayColorBalance();
+
+          return;
+        }
+
+        let inputValue = parseInt(formElements[inputType].input.value);
+        if (Number.isNaN(inputValue)) inputValue = 0;
+
+        switch (inputType) {
+          case '静止円-周長':
+          case '回転図形-周長-1':
+          case '回転図形-周長-2':
+            if (inputValue < 静止円基本周長 / 10) inputValue = 静止円基本周長 / 10;
+            if (inputValue > 静止円基本周長) inputValue = 静止円基本周長;
+            setMeterPosition(inputType, (inputValue - 静止円基本周長 / 10) / (静止円基本周長 - 静止円基本周長 / 10));
+            if (inputType === '静止円-周長') {
+              静止円周長 = inputValue;
+              静止円径 = 静止円基本単位径 * 静止円周長 / 静止円基本周長;
+            } else if (inputType === '回転図形-周長-1') {
+              回転図形周長1 = inputValue;
+            } else {
+              回転図形周長2 = inputValue;
+            }
+            回転図形設定値定義();
+            break;
+          case 'focal-length-P':
+          case 'focal-length-T':
+            if (inputType === 'focal-length-T') {
+              focalTheta = inputValue / 180 * Math.PI;
+            } else {
+              focalLengthPercentage = inputValue / 100;
+            }
+            displayFocalLength();
+            break;
+        }
+
+        formElements[inputType].input.value = inputValue;
+        output();
+      };
+
+      const setFocalLength = (event, operate) => {
+        const operatorHandleRect = focalLengthOperator.getBoundingClientRect();
+        const client = getClientPosition(event);
+        const X = 60 - client.X + operatorHandleRect.left;
+        const Y = 60 - client.Y + operatorHandleRect.top;
+        const R = Math.pow(X * X + Y * Y, 1 / 2);
+        if (R > 50 && operate !== 'move') return;
+        focalTheta = Math.acos(Y * -1 / R) * (X >= 0 ? 1 : -1);
+        focalLengthPercentage = Math.min(R / 25, 2);
+        displayFocalLength();
+        output();
+      };
+
+      const displayFocalLength = () => {
+        const X = Math.sin(focalTheta) * focalLengthPercentage * 25;
+        const Y = Math.cos(focalTheta) * focalLengthPercentage * -25;
+        focalLengthOperatorContext.clearRect(0, 0, 120, 120);
+        focalLengthOperatorContext.setTransform(1, 0, 0, 1, 0, 0);
+        focalLengthOperatorContext.beginPath();
+        focalLengthOperatorContext.arc(60 - X, 60 - Y, 5, 0, Math.PI * 2);
+        focalLengthOperatorContext.closePath();
+        focalLengthOperatorContext.fill();
+        formElements['focal-length-P'].input.value = Math.round(focalLengthPercentage * 100);
+        formElements['focal-length-T'].input.value = Math.round(focalTheta / Math.PI * 180);
+      };
+
+      const initColor = () => {
+        const colors = ['#ff0000', '#ff00ff', '#0000ff', '#00ffff', '#00ff00', '#ffff00'];
+        colors.forEach((color, i) => {
+          const XS = 45 * i;
+          const XE = 45 * (i + 1);
+          const palet = colorBaseScreenContext.createLinearGradient(XS, 0, XE, 0);
+          palet.addColorStop(0.0, color);
+          palet.addColorStop(1.0, colors[(i + 1) % 6]);
+          colorBaseScreenContext.fillStyle = palet;
+          colorBaseScreenContext.beginPath();
+          colorBaseScreenContext.rect(XS, 0, XE, 20);
+          colorBaseScreenContext.closePath();
+          colorBaseScreenContext.fill();
+        });
+
+        setColor();
+      };
+
+      const setColorBase = (event, operate) => {
+        const operatorHandleRect = colorBaseOperator.getBoundingClientRect();
+        const client = getClientPosition(event);
+        const X = client.X - operatorHandleRect.left;
+        let P = X / operatorHandleRect.width;
+        if ((P < 0 || P > 1) && operate !== 'move') return;
+        if (P < 0) P = 0;
+        if (P > 1) P = 1;
+
+        strokeColorBase = P;
+
+        setColor();
+        displayColorBase();
+      };
+
+      const setColorBalance = (event, operate) => {
+        const operatorHandleRect = colorBalanceOperator.getBoundingClientRect();
+        const client = getClientPosition(event);
+        const X = client.X - operatorHandleRect.left;
+        const Y = client.Y - operatorHandleRect.top;
+        let PX = X / operatorHandleRect.width;
+        let PY = Y / operatorHandleRect.height;
+        if ((PX < 0 || PX > 1 || PY < 0 || PY > 1) && operate !== 'move') return;
+        if (PX < 0) PX = 0;
+        if (PX > 1) PX = 1;
+        if (PY < 0) PY = 0;
+        if (PY > 1) PY = 1;
+        strokeColorSaturation = PX;
+        strokeColorBalance = 1 - PY;
+
+        setColor();
+        displayColorBalance();
+      };
+
+      const setColor = () => {
+        let [R, G, B] = getColorElements();
+        R += (1 - R) * (1 - strokeColorSaturation);
+        G += (1 - G) * (1 - strokeColorSaturation);
+        B += (1 - B) * (1 - strokeColorSaturation);
+        R = Math.floor(R * strokeColorBalance * 255);
+        G = Math.floor(G * strokeColorBalance * 255);
+        B = Math.floor(B * strokeColorBalance * 255);
+        R = (R < 16 ? '0' : '') + R.toString(16);
+        G = (G < 16 ? '0' : '') + G.toString(16);
+        B = (B < 16 ? '0' : '') + B.toString(16);
+
+        strokeColor = `#${R}${G}${B}`;
+        formElements['color'].input.value = strokeColor;
+      };
+
+      const displayColorBase = () => {
+        const drawColorBase = (poses, drawType) => {
+          colorBaseOperatorContext.beginPath();
+          poses.forEach(([X, Y], i) => {
+            i === 0
+              ? colorBaseOperatorContext.moveTo(X, Y)
+              : colorBaseOperatorContext.lineTo(X, Y);
+          });
+          colorBaseOperatorContext.closePath();
+          drawType === 'S'
+            ? colorBaseOperatorContext.stroke()
+            : colorBaseOperatorContext.fill();
+        };
+
+        colorBaseOperatorContext.clearRect(0, 0, 330, 20);
+        colorBaseOperatorContext.setTransform(1, 0, 0, 1, 0, 0);
+        drawColorBase([[330 * strokeColorBase, 0], [330 * strokeColorBase, 20]], 'S');
+        drawColorBase([[330 * strokeColorBase - 5, 8], [330 * strokeColorBase - 5, 12], [330 * strokeColorBase - 2, 10]], 'F');
+        drawColorBase([[330 * strokeColorBase + 5, 8], [330 * strokeColorBase + 5, 12], [330 * strokeColorBase + 2, 10]], 'F');
+
+        const [R, G, B] = getColorElements();
+        const paletC = colorBalanceScreenContext.createLinearGradient(0, 0, 330, 0);
+        paletC.addColorStop(0.0, '#ffffff');
+        paletC.addColorStop(1.0, `rgb(${Math.floor(R * 255)}, ${Math.floor(G * 255)}, ${Math.floor(B * 255)})`);
+        colorBalanceScreenContext.clearRect(0, 0, 330, 70);
+        colorBalanceScreenContext.setTransform(1, 0, 0, 1, 0, 0);
+        colorBalanceScreenContext.fillStyle = paletC;
+        colorBalanceScreenContext.beginPath();
+        colorBalanceScreenContext.rect(0, 0, 330, 70);
+        colorBalanceScreenContext.closePath();
+        colorBalanceScreenContext.fill();
+        const paletT = colorBalanceScreenContext.createLinearGradient(0, 0, 0, 70);
+        paletT.addColorStop(0.0, '#00000000');
+        paletT.addColorStop(1.0, '#000000ff');
+        colorBalanceScreenContext.fillStyle = paletT;
+        colorBalanceScreenContext.beginPath();
+        colorBalanceScreenContext.rect(0, 0, 330, 70);
+        colorBalanceScreenContext.closePath();
+        colorBalanceScreenContext.fill();
+      };
+
+      const displayColorBalance = () => {
+        colorBalanceOperatorContext.clearRect(0, 0, 330, 70);
+        colorBalanceOperatorContext.setTransform(1, 0, 0, 1, 0, 0);
+        colorBalanceOperatorContext.beginPath();
+        colorBalanceOperatorContext.arc(330 * strokeColorSaturation, 70 * (1 - strokeColorBalance), 7, 0, Math.PI * 2);
+        colorBalanceOperatorContext.closePath();
+        colorBalanceOperatorContext.stroke();
+      };
+
+      const getColorElements = () => {
+        const PB = strokeColorBase * 6 - Math.floor(strokeColorBase * 6);
+
+        switch (Math.floor(strokeColorBase * 6)) {
+          case 0:
+            return [1, 0, PB];
+          case 1:
+            return [1 - PB, 0, 1];
+          case 2:
+            return [0, PB, 1];
+          case 3:
+            return [0, 1, 1 - PB];
+          case 4:
+            return [PB, 1, 0];
+          case 5:
+            return [1, 1 - PB, 0];
+          default:
+            return [1, 0, 0];
+        }
+      };
+
+      const getClientPosition = (event) => ({
+        X: event.clientX !== undefined ? event.clientX : event.changedTouches[0].clientX,
+        Y: event.clientY !== undefined ? event.clientY : event.changedTouches[0].clientY,
+      });
+
+      const startExecution = () => {
+        startedSwitch = true;
+        startAnimation();
+        Object.keys(formElements).forEach((meterKey) => {
+          formElements[meterKey].input.disabled = true;
+          formElements[meterKey].submit.disabled = true;
+        });
+        // tangentTypeInputI.disabled = true;
+        // tangentTypeInputO.disabled = true;
+        executeButton.disabled = true;
+        pauseButton.innerText = '停止';
+        pauseButton.disabled = false;
+        deleteButton.disabled = false;
+        counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        counterAnnouncer.innerText = `0 / ${回転必要回数 * (接着必要進捗 + 転換必要進捗)}`;
+      };
+
+      const endExecution = () => {
+        startedSwitch = false;
+        stopAnimation();
+        auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
+        auxiliaryContext.clearRect(0, 0, displaySize, displaySize);
+        接着進捗 = 0;
+        // 転換進捗 = 回転図形回転角度 * 回転単位角度分母 / (Math.PI * 2);
+        転換進捗 = 0;
+        回転進捗 = 0;
+        進行状態 = '転換1';
+        Object.keys(formElements).forEach((meterKey) => {
+          formElements[meterKey].input.disabled = false;
+          formElements[meterKey].submit.disabled = false;
+        });
+        // tangentTypeInputI.disabled = false;
+        // tangentTypeInputO.disabled = false;
+        executeButton.disabled = false;
+        pauseButton.disabled = true;
+      };
+
+      const pause = () => {
+        if (!animationSwitch) {
+          startAnimation();
+          pauseButton.innerText = '停止';
+        } else {
+          stopAnimation();
+          pauseButton.innerText = '再開';
+        }
+      };
+
+      const deleteExecution = () => {
+        endExecution();
+        displayContext.setTransform(1, 0, 0, 1, 0, 0);
+        displayContext.clearRect(0, 0, displaySize, displaySize);
+        output();
+        pauseButton.disabled = true;
+        deleteButton.disabled = true;
+        counterGaugeContext.clearRect(0, 0, displaySize, gaugeHeight);
+        counterAnnouncer.innerText = `0 / ${回転必要回数 * (接着必要進捗 + 転換必要進捗)}`;
+      };
+
+      document.onkeydown = (event) => {
+        if (event.code !== 'Enter') return;
+        if (document.activeElement.tagName === 'INPUT') {
+          const elementId = document.activeElement.id;
+          if (Object.keys(formElements).includes(elementId)) {
+            submitParam(elementId);
+          }
+        } else if (!startedSwitch && !animationSwitch) {
+          startExecution();
+        } else {
+          pause();
+        }
+      };
+
+      Object.keys(formElements).forEach((inputKey) => {
+        if (meterElements[inputKey]) {
+          meterElements[inputKey].meter.onpointerdown = (event) => {
+            setMeterSwitch(inputKey, getClientPosition(event).X);
+          };
+        }
+        formElements[inputKey].submit.onclick = () => submitParam(inputKey);
+      });
+
+      const setTangentVector = (内外指定) => {
+        tangentVector = 内外指定 ? -1 : 1;
+        if (tangentVector === -1) {
+          反射 = false;
+          反射1.checked = true;
+        }
+        内外指定統括実体.dataset.内外 = `${内外指定}`;
+        回転図形設定値定義();
+        output();
+      };
+
+      const documentMousemove = (event) => {
+        switch (meterSwitch) {
+          case 'focal-length':
+            if (animationSwitch || !meterSwitch) return;
+            setFocalLength(event, 'move');
+            break;
+          case 'color-base':
+            setColorBase(event, 'move');
+            break;
+          case 'color-balance':
+            setColorBalance(event, 'move');
+            break;
+          default:
+            if (animationSwitch || !meterSwitch) return;
+            const { X } = getClientPosition(event);
+            setMeterLength(meterSwitch, X);
+        }
+      };
+
+      document.onpointerup = (event) => {
+        setMeterSwitch(false);
+      };
+
+      if (typeof document.ontouchmove === 'object') {
+        document.ontouchmove = documentMousemove;
+      } else {
+        document.onmousemove = documentMousemove;
+      }
+
+      executeButton.onclick = () => {
+        if (animationSwitch) return;
+        startExecution();
+      };
+
+      pauseButton.onclick = () => {
+        pause();
+      }
+
+      deleteButton.onclick = () => {
+        deleteExecution();
+      };
+
+      focalLengthOperator.onmousedown = (event) => {
+        if (animationSwitch || meterSwitch) return;
+        meterSwitch = 'focal-length';
+        setFocalLength(event, 'set');
+      };
+
+      colorBaseOperator.onmousedown = (event) => {
+        if (meterSwitch) return;
+        meterSwitch = 'color-base';
+        setColorBase(event, 'set');
+      };
+
+      colorBalanceOperator.onmousedown = (event) => {
+        if (meterSwitch) return;
+        meterSwitch = 'color-balance';
+        setColorBalance(event, 'set');
+      };
+
+      内外指定統括実体.querySelectorAll('div').forEach((内外指定実体) => {
+        const 内外指定 = parseInt(内外指定実体.dataset.値);
+        内外指定実体.addEventListener('click', () => {
+          setTangentVector(内外指定);
+        });
+      });
+
+      [反射0, 反射1].forEach((要素) => {
+        要素.addEventListener('change', () => {
+          反射 = !!parseInt(要素.value);
+          if (反射) {
+            setTangentVector(0);
+          }
+          回転図形設定値定義();
+          output();
+        });
+      });
+
+      form.onsubmit = () => false;
+      setMeterPosition('静止円-周長', (静止円周長 - 静止円基本周長 / 10) / (静止円基本周長 - 静止円基本周長 / 10));
+      setMeterPosition('回転図形-周長-1', (回転図形周長1 - 静止円基本周長 / 10) / (静止円基本周長 - 静止円基本周長 / 10));
+      setMeterPosition('回転図形-周長-2', (回転図形周長2 - 静止円基本周長 / 10) / (静止円基本周長 - 静止円基本周長 / 10));
+      formElements['静止円-周長'].input.value = 静止円周長;
+      formElements['回転図形-周長-1'].input.value = 回転図形周長1;
+      formElements['回転図形-周長-2'].input.value = 回転図形周長2;
+      formElements['focal-length-P'].input.value = focalLengthPercentage;
+      formElements['focal-length-T'].input.value = focalTheta;
+      displayFocalLength();
+      initColor();
+      displayColorBase();
+      displayColorBalance();
+      pauseButton.disabled = true;
+      deleteButton.disabled = true;
+      回転図形設定値定義();
+      output();
+    </script>
+  </body>
+</html>
