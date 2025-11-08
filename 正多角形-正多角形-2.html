@@ -1,0 +1,1069 @@
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overscroll-behavior-x: none;
+        overscroll-behavior-y: none;
+      }
+      #contents {
+        display: flex;
+        align-items: flex-start;
+        margin: 10px;
+      }
+      #表示統括枠[data-環境="2"] {
+        background-color: #000000;
+      }
+      #form {
+        margin-right: 10px;
+        width: 360px;
+        padding: 5px 5px 0 5px;
+        border: solid 1px #aaaaaa;
+        box-sizing: border-box;
+        font-size: 12px;
+      }
+      .行 {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        list-style: none;
+        margin: 0 0 5px 0;
+        padding: 5px;
+        background-color: #eeeeff;
+      }
+      .行 .operator {
+        display: flex;
+        align-items: center;
+      }
+      .行 label {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .行 label input {
+        margin: 0;
+      }
+      .入力枠 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: solid 1px #a0a0a0;
+        border-radius: 2px;
+        margin-right: 5px;
+        width: 50px;
+        background-color: #ffffff;
+      }
+      #色入力枠 {
+        width: 80px;
+      }
+      .入力枠 input {
+        display: block;
+        border: none;
+        outline: none;
+        width: 100%;
+      }
+      .入力枠:focus-within {
+        border-color: #4f7df3;
+      }
+      .単位 {
+        display: inline-block;
+        padding: 0 1px;
+      }
+      #form .submit-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0 5px 0;
+        padding-top: 5px;
+        border-top: solid 1px #dddddd;
+      }
+      #form .submit-row button {
+        margin: 0 5px;
+      }
+      .meter {
+        position: relative;
+        height: 24px;
+        margin-top: 5px;
+      }
+      .meter::before {
+        content: "";
+        position: absolute;
+        display: block;
+        width: 100%;
+        height: 1px;
+        top: 50%;
+        border-top: solid 1px #aaaaaa;
+      }
+      .meter-handle {
+        position: absolute;
+        top: 0;
+        width: 10px;
+        height: calc(100% - 2px);
+        border: solid 1px #888888;
+        background-color: #ffffff;
+        cursor: pointer;
+      }
+      #display-wrapper {
+        position: relative;
+        border: solid 1px #aaaaaa;
+      }
+      #display,
+      #auxiliary-line,
+      #focal-length-screen,
+      #focal-length-operator {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      #focal-length-wrapper {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 0 10px;
+        margin: 0;
+        padding: 0;
+      }
+      #focal-length-wrapper label {
+        grid-column: 1;
+      }
+      #focal-length-announcer-wrapper {
+        grid-column: 1;
+        grid-row: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        line-height: 24px;
+        gap: 4px;
+      }
+      #focal-length-operator-wrapper {
+        grid-column: 2;
+        grid-row: 1 / 3;
+        position: relative;
+        width: 120px;
+        height: 120px;
+      }
+      #focal-length-announcer-wrapper div {
+        white-space: nowrap;
+      }
+      #color-base-wrapper,
+      #color-balance-wrapper {
+        position: relative;
+        margin: 5px auto 0;
+        width: 330px;
+      }
+      #color-base-wrapper {
+        height: 20px;
+      }
+      #color-balance-wrapper {
+        height: 70px;
+      }
+      #color-base-wrapper canvas,
+      #color-balance-wrapper canvas {
+        position: absolute;
+      }
+      #counter {
+        position: relative;
+        height: 30px;
+        padding: 0;
+        border-right: solid 1px #aaaaaa;
+        border-bottom: solid 1px #aaaaaa;
+        border-left: solid 1px #aaaaaa;
+      }
+      #announcer {
+        position: absolute;
+        box-sizing: border-box;
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 5px;
+        text-align: right;
+      }
+      #表示統括枠[data-環境="2"] #announcer {
+        color: #ffffff;
+      }
+      #gauge {
+        position: absolute;
+        left: 0;
+      }
+      .項目群 {
+        display: flex;
+        gap: 16px;
+      }
+      .項目 {
+        display: flex;
+      }
+      .内外指定 {
+        display: flex;
+        border: solid 1px #767676;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .内外指定 div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px;
+        background-color: #ffffff;
+        cursor: pointer;
+      }
+      .内外指定[data-内外="0"] div[data-値="0"],
+      .内外指定[data-内外="1"] div[data-値="1"] {
+        background-color: #446677;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="contents">
+      <form id="form">
+        <div class="行">
+          <div class="項目">
+            <div class="入力枠"><input type="text" id="辺長" /></div>
+            <button id="辺長-確定">辺長</button>
+          </div>
+          <div class="meter" id="辺長-meter">
+            <div class="meter-handle" id="辺長-meter-handle"></div>
+          </div>
+        </div>
+        <div class="行">
+          <label>静止図形</label>
+          <div class="項目群">
+            <div class="項目">
+              <select id="静止図形-角数"></select>
+            </div>
+            <div class="項目">
+              <select id="静止図形-密度"></select>
+            </div>
+          </div>
+        </div>
+        <div class="行">
+          <label>回転図形1</label>
+          <div class="項目群">
+            <div class="項目">
+              <select id="回転図形1-角数"></select>
+            </div>
+            <div class="項目">
+              <select id="回転図形1-密度"></select>
+            </div>
+            <div class="内外指定" data-内外="0">
+              <div data-値="0">内接</div><div data-値="1">外接</div>
+            </div>
+          </div>
+        </div>
+        <div class="行">
+          <label>回転図形2</label>
+          <div class="項目群">
+            <div class="項目">
+              <select id="回転図形2-角数"></select>
+            </div>
+            <div class="項目">
+              <select id="回転図形2-密度"></select>
+            </div>
+            <div class="内外指定" data-内外="0">
+              <div data-値="0">内接</div><div data-値="1">外接</div>
+            </div>
+          </div>
+        </div>
+        <div class="行">
+          <div id="focal-length-wrapper">
+            <label>描画点</label>
+            <div id="focal-length-announcer-wrapper">
+              <div class="項目">
+                <div class="入力枠"><input type="text" id="描画点距離" /></div>
+                <button type="button" id="描画点距離-確定">長さ</button>
+              </div>
+              <div class="項目">
+                <div class="入力枠"><input type="text" id="描画点角度" /><span class="単位">°</span></div>
+                <button type="button" id="描画点角度-確定">角度</button>
+              </div>
+            </div>
+            <div id="focal-length-operator-wrapper">
+              <canvas id="focal-length-screen" width="120" height="120"></canvas>
+              <canvas id="focal-length-operator" width="120" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="行">
+          <div class="項目">
+            <div id="色入力枠" class="入力枠"><span class="単位">#</span><input type="text" id="色" /></div>
+            <button id="色-確定">線の色</button>
+          </div>
+          <div id="color-base-wrapper">
+            <canvas id="color-base-screen" width="330" height="20"></canvas>
+            <canvas id="color-base-operator" width="330" height="20"></canvas>
+          </div>
+          <div id="color-balance-wrapper">
+            <canvas id="color-balance-screen" width="330" height="70"></canvas>
+            <canvas id="color-balance-operator" width="330" height="70"></canvas>
+          </div>
+        </div>
+        <div class="submit-row">
+          <button id="execute">描画開始</button>
+          <button id="pause">停止</button>
+          <button id="delete">削除</button>
+        </div>
+      </form>
+      <div id="表示統括枠" data-環境="1">
+        <div id="display-wrapper">
+          <canvas id="auxiliary"></canvas>
+          <canvas id="display"></canvas>
+        </div>
+        <div id="counter">
+          <canvas id="gauge"></canvas>
+          <div id="announcer"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const 実体対単位倍率 = 0.5;
+      const 回転進捗分割数 = 120;
+      const 辺長下限 = 20;
+      const 辺長上限 = 200;
+      const 図形角数下限 = 2;
+      const 図形角数上限 = 9;
+      const 表示枠幅 = 500;
+      const 表示径 = 表示枠幅 / 2;
+      const 密度群 = {};
+      const gaugeHeight = 30;
+      const 表示統括枠実体 = document.getElementById('表示統括枠');
+      const 表示枠実体 = document.getElementById('display-wrapper');
+      const display = document.getElementById('display');
+      const auxiliary = document.getElementById('auxiliary');
+      const 焦点距離表示実体 = document.getElementById('focal-length-screen');
+      const 焦点距離Operator = document.getElementById('focal-length-operator');
+      const 基本色表示実体 = document.getElementById('color-base-screen');
+      const 基本色操作実体 = document.getElementById('color-base-operator');
+      const colorBalanceScreen = document.getElementById('color-balance-screen');
+      const colorBalanceOperator = document.getElementById('color-balance-operator');
+      const executeButton = document.getElementById('execute');
+      const pauseButton = document.getElementById('pause');
+      const deleteButton = document.getElementById('delete');
+      const counterAnnouncer = document.getElementById('announcer');
+      const counterGauge = document.getElementById('gauge');
+      const form = document.getElementById('form');
+
+      const displayContext = display.getContext('2d');
+      const auxiliaryContext = auxiliary.getContext('2d');
+      const 焦点距離表示制御 = 焦点距離表示実体.getContext('2d');
+      const 焦点距離操作制御 = 焦点距離Operator.getContext('2d');
+      const counterGaugeContext = counterGauge.getContext('2d');
+      const 基本色表示制御 = 基本色表示実体.getContext('2d');
+      const 基本色操作制御 = 基本色操作実体.getContext('2d');
+      const colorBalanceScreenContext = colorBalanceScreen.getContext('2d');
+      const colorBalanceOperatorContext = colorBalanceOperator.getContext('2d');
+
+      const 入力実体群 = ['辺長', '描画点距離', '描画点角度', '色'].reduce((elements, meterType) => ({
+        ...elements, [meterType]: {
+          input: document.getElementById(`${meterType}`),
+          submit: document.getElementById(`${meterType}-確定`),
+        },
+      }), {});
+      const 調整実体群 = ['辺長'].reduce((elements, meterType) => ({
+        ...elements, [meterType]: {
+          meter: document.getElementById(`${meterType}-meter`),
+          handle: document.getElementById(`${meterType}-meter-handle`),
+        },
+      }), {});
+      const [角数指定実体群, 密度指定実体群] = [
+        ['静止図形', '回転図形1', '回転図形2'].map((記号) => document.getElementById(`${記号}-角数`)),
+        ['静止図形', '回転図形1', '回転図形2'].map((記号) => document.getElementById(`${記号}-密度`)),
+      ];
+      const 密度候補実体群 = [[], [], []];
+      Array(図形角数上限 - 図形角数下限 + 1).fill(null).forEach((_, 角数係数) => {
+        const 角数 = 図形角数下限 + 角数係数;
+        密度群[角数] = Array(Math.floor(角数 / 2)).fill(null).flatMap((_, 数係数) => !数係数 || 角数 % (数係数 + 1) ? (数係数 + 1) : []);
+        角数指定実体群.forEach((角数指定実体, 担当) => {
+          const 角数候補実体 = document.createElement('option');
+          角数候補実体.value = 角数;
+          角数候補実体.innerText = `${角数}角`;
+          角数指定実体群[担当].appendChild(角数候補実体);
+          const 密度候補実体 = document.createElement('option');
+          密度候補実体.value = 角数 - 1;
+          密度候補実体.innerText = `密度:${角数 - 1}`;
+          密度候補実体群[担当].push(密度候補実体);
+        });
+      });
+      const 内外指定統括実体群 = Array.from(document.querySelectorAll('.内外指定'));
+
+      表示枠実体.style.width = `${表示枠幅}px`;
+      表示枠実体.style.height = `${表示枠幅}px`;
+      counterGauge.style.width = `${表示枠幅}px`;
+      display.setAttribute('width', 表示枠幅);
+      display.setAttribute('height', 表示枠幅);
+      auxiliary.setAttribute('width', 表示枠幅);
+      auxiliary.setAttribute('height', 表示枠幅);
+      counterGauge.setAttribute('width', 表示枠幅);
+      counterGauge.setAttribute('height', gaugeHeight);
+      counterGaugeContext.fillStyle = '#66cc66';
+      焦点距離表示制御.strokeStyle = '#880000';
+      焦点距離表示制御.beginPath();
+      焦点距離表示制御.arc(60, 60, 25, 0, Math.PI * 2);
+      焦点距離表示制御.closePath();
+      焦点距離表示制御.stroke();
+      焦点距離表示制御.strokeStyle = '#dd7777';
+      焦点距離表示制御.beginPath();
+      焦点距離表示制御.arc(60, 60, 50, 0, Math.PI * 2);
+      焦点距離表示制御.closePath();
+      焦点距離表示制御.stroke();
+      焦点距離操作制御.strokeStyle = '#aa0000';
+      基本色操作制御.strokeStyle = '#ffffff';
+      基本色操作制御.fillStyle = '#ffffff';
+      基本色操作制御.lineWidth = 2;
+      colorBalanceOperatorContext.strokeStyle = '#ffffff';
+      colorBalanceOperatorContext.lineWidth = 2;
+
+      const 設定 = { 辺長: 120 };
+      const 図形群 = [
+        { 角数: 5, 密度: 1 },
+        { 角数: 6, 密度: 1, 方向: 0 },
+        { 角数: 3, 密度: 1, 方向: 1 },
+      ];
+      const 描画制御 = {
+        動作: null,
+        動作指示: false,
+        回転段階: 0,
+        回転進捗: 0,
+        前回座標: null,
+      };
+      let 焦点距離率 = 0.8;
+      let 焦点距離 = 0;
+      let 焦点角度 = 120 / 180 * Math.PI;
+      let meterHandleDiffX = 0;
+      let meterSwitch = false;
+      let animation = null;
+      let startedSwitch = false;
+      let 予定時刻 = 0;
+      let latestX = 0;
+      let latestY = 0;
+      let 必要回転回数 = 1;
+      let 単位実行時間 = 5;
+      let strokeColorBase = 0.07;
+      let strokeColorBalance = 0.8;
+      let strokeColorSaturation = 0.9;
+      let strokeColor = '000000';
+      let 表示環境 = 1;
+
+      const 図形設定値定義 = () => {
+        図形群.forEach((図形, 担当) => {
+          密度候補実体群[担当].forEach((候補実体) => {
+            const 従属 = 候補実体.parentElement === 密度指定実体群[担当];
+            密度群[図形.角数].includes(parseInt(候補実体.value))
+              ? (従属 || 密度指定実体群[担当].appendChild(候補実体))
+              : (従属 && 密度指定実体群[担当].removeChild(候補実体));
+          });
+          if (!密度群[図形.角数].includes(図形.密度)) {
+            図形.密度 = 1;
+            密度指定実体群[担当].value = 1;
+          }
+          図形.径長 = 設定.辺長 / (Math.sin(Math.PI * 図形.密度 / 図形.角数) * 2);
+          図形.環境角位置 = 担当 ? Math.floor(図形.角数 / 2 - 1) : 0;
+        });
+        set回転回数();
+      };
+
+      const 描画 = () => {
+        const 図形色群 = [
+          ['#cccccc', '#eeaabb', '#bbccee'],
+          ['#888888', '#aa3344', '#4455bb'],
+        ][表示環境 - 1];
+        auxiliaryContext.clearRect(0, 0, 表示枠幅, 表示枠幅);
+        図形群.reduce(([環境角度, 環境座標X, 環境座標Y], 図形, 担当) => {
+          const 回転角度 = 担当 > 0 ? (Math.PI * 2 * (図形群[担当 - 1].密度 / 図形群[担当 - 1].角数 + 図形.密度 / 図形.角数 * (図形.方向 ? 1 : -1)) * 描画制御.回転進捗 / 回転進捗分割数) : 0;
+          const 中心角度 = 担当 > 0 ? (環境角度 + Math.PI * 図形.方向 + Math.PI * 図形群[担当 - 1].密度 / 図形群[担当 - 1].角数 + Math.PI * 図形.密度 / 図形.角数 * (図形.方向 ? 1 : -1) - 回転角度) : 0;
+          const 中心座標X = 担当 > 0 ? (環境座標X - Math.sin(中心角度) * 図形.径長) : 0;
+          const 中心座標Y = 担当 > 0 ? (環境座標Y - Math.cos(中心角度) * 図形.径長) : 0;
+          auxiliaryContext.strokeStyle = 図形色群[担当];
+          auxiliaryContext.beginPath();
+          Array(図形.角数).fill(null).forEach((_, 角位置) => {
+            const 角度 = 中心角度 + Math.PI * 2 * 角位置 * 図形.密度 / 図形.角数;
+            const 座標X = 中心座標X + Math.sin(角度) * 図形.径長;
+            const 座標Y = 中心座標Y + Math.cos(角度) * 図形.径長;
+            if (角位置 === (図形.環境角位置 + 図形.角数 - 描画制御.回転段階 * ((担当 ? 図形.方向 : 1) ? 1 : 0) * (1 + 担当) % 図形.角数) % 図形.角数) {
+              環境角度 = 角度;
+              環境座標X = 座標X;
+              環境座標Y = 座標Y;
+            }
+            角位置
+              ? auxiliaryContext.lineTo(座標X * 実体対単位倍率 + 表示径, 座標Y * 実体対単位倍率 + 表示径)
+              : auxiliaryContext.moveTo(座標X * 実体対単位倍率 + 表示径, 座標Y * 実体対単位倍率 + 表示径);
+          });
+          auxiliaryContext.closePath();
+          auxiliaryContext.stroke();
+          if (担当 === 図形群.length - 1) {
+            const 角度 = 中心角度 + Math.PI * 2 * ((図形.角数 - 描画制御.回転段階 * (図形.方向 ? 1 : -1) % 図形.角数) % 図形.角数) * 図形.密度 / 図形.角数 + 焦点角度;
+            const 描画座標X = 中心座標X + Math.sin(角度) * 図形.径長 * 焦点距離率;
+            const 描画座標Y = 中心座標Y + Math.cos(角度) * 図形.径長 * 焦点距離率;
+            auxiliaryContext.strokeStyle = 表示環境 === 1 ? '#c0c0ee' : '#8080aa';
+            auxiliaryContext.beginPath();
+            auxiliaryContext.moveTo(中心座標X * 実体対単位倍率 + 表示径, 中心座標Y * 実体対単位倍率 + 表示径);
+            auxiliaryContext.lineTo(描画座標X * 実体対単位倍率 + 表示径, 描画座標Y * 実体対単位倍率 + 表示径);
+            auxiliaryContext.closePath();
+            auxiliaryContext.stroke();
+            if ((描画制御.回転段階 || 描画制御.回転進捗) && 描画制御.前回座標) {
+              displayContext.strokeStyle = `#${strokeColor}`;
+              displayContext.beginPath();
+              displayContext.moveTo(描画制御.前回座標[0] * 実体対単位倍率 + 表示径, 描画制御.前回座標[1] * 実体対単位倍率 + 表示径);
+              displayContext.lineTo(描画座標X * 実体対単位倍率 + 表示径, 描画座標Y * 実体対単位倍率 + 表示径);
+              displayContext.stroke();
+            }
+            描画制御.前回座標 = [描画座標X, 描画座標Y];
+          }
+
+          return [環境角度, 環境座標X, 環境座標Y];
+        }, [0, 0, 0]);
+      };
+
+      const 動作 = () => {
+        描画制御.回転進捗 ++;
+        if (描画制御.回転進捗 >= 回転進捗分割数) {
+          描画制御.回転進捗 = 0;
+          描画制御.回転段階 ++;
+        }
+        描画();
+        const 進捗分子 = 描画制御.回転段階 * 回転進捗分割数 + 描画制御.回転進捗;
+        const 進捗分母 = 必要回転回数 * 回転進捗分割数;
+        counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
+        counterGaugeContext.fillRect(0, 0, 表示枠幅 * 進捗分子 / 進捗分母, gaugeHeight);
+        counterAnnouncer.innerText = `${進捗分子} / ${進捗分母}`;
+        if (描画制御.回転段階 >= 必要回転回数) {
+          endExecution();
+        } else if (描画制御.動作指示) {
+          const 現在時刻 = (new Date()).getTime();
+          const 次回予定時刻 = Math.round(予定時刻 - 単位実行時間 * (回転進捗分割数 * (必要回転回数 - 描画制御.回転段階) - 描画制御.回転進捗));
+          const 次回実行時間 = Math.max(次回予定時刻 - 現在時刻, 1);
+          animation = setTimeout(動作, 次回実行時間);
+        }
+      };
+
+      const startAnimation = () => {
+        if (animation) clearInterval(animation);
+        描画制御.動作指示 = true;
+        予定時刻 = (new Date()).getTime() + 単位実行時間 * (回転進捗分割数 * (必要回転回数 - 描画制御.回転段階) - 描画制御.回転進捗);
+        console.log([
+          ...図形群.map((設定, 設定番号) => `${設定.角数}(${設定.密度})`),
+          `${入力実体群.描画点距離.input.value}-${入力実体群.描画点角度.input.value}`,
+          入力実体群.色.input.value,
+        ].join('__'));
+        動作();
+      };
+
+      const stopAnimation = () => {
+        if (animation) clearTimeout(animation);
+        描画制御.動作指示 = false;
+      };
+
+      const getMeterParams = (meterType) => {
+        const meterRect = 調整実体群[meterType].meter.getBoundingClientRect();
+        const meterHandleRect = 調整実体群[meterType].handle.getBoundingClientRect();
+
+        return {
+          left: meterRect.left + meterHandleRect.width / 2,
+          right: meterRect.left + meterRect.width - meterHandleRect.width / 2,
+        };
+      };
+
+      const setMeterPosition = (meterType, percentage) => {
+        if (描画制御.動作指示) return;
+
+        const { left, right } = getMeterParams(meterType);
+        調整実体群[meterType].handle.style.left = `${Math.floor((right - left) * percentage)}px`;
+      };
+
+      const setMeterSwitch = (operate, clientX) => {
+        if (描画制御.動作指示 && operate) return;
+        meterSwitch = operate;
+        if (operate === false) return;
+        const meterHandleRect = 調整実体群[operate].handle.getBoundingClientRect();
+        if (clientX >= meterHandleRect.left && clientX <= meterHandleRect.left + meterHandleRect.width) {
+          meterHandleDiffX = clientX - (meterHandleRect.left + meterHandleRect.width / 2);
+        } else {
+          meterHandleDiffX = 0;
+          setMeterLength(operate, clientX);
+        }
+      };
+
+      const setMeterPercentage = (meterType, percentage) => {
+        if (描画制御.動作指示) return;
+        if (percentage < 0) percentage = 0;
+        if (percentage > 1) percentage = 1;
+        percentage = Math.floor(percentage * 100) / 100;
+        setMeterPosition(meterType, percentage);
+        switch (meterType) {
+          case '辺長':
+            設定.辺長 = Math.floor(辺長下限 + percentage * (辺長上限 - 辺長下限));
+            入力実体群[meterType].input.value = 設定.辺長;
+            図形設定値定義();
+            break;
+        }
+        描画();
+      };
+
+      const setMeterLength = (meterType, clientX) => {
+        if (描画制御.動作指示) return;
+        const { left, right } = getMeterParams(meterType);
+        const percentage = (clientX - meterHandleDiffX - left) / (right - left);
+        setMeterPercentage(meterType, percentage);
+      };
+
+      const submitMeter = (meterType) => {
+        if (描画制御.動作指示) return;
+        const inputValue = parseInt(入力実体群[meterType].input.value);
+        switch (meterType) {
+          case '辺長':
+            設定.辺長 = Math.max(Math.min(inputValue, 辺長上限), 辺長下限);
+            setMeterPosition(meterType, (設定.辺長 - 辺長下限) / (辺長上限 - 辺長下限));
+            入力実体群[meterType].input.value = 設定.辺長;
+            図形設定値定義();
+            描画();
+            break;
+          case '描画点距離':
+          case '描画点角度':
+            if (meterType === '描画点角度') {
+              焦点角度 = inputValue / 180 * Math.PI;
+            } else {
+              焦点距離率 = inputValue / 100;
+            }
+            display焦点距離();
+            図形設定値定義();
+            描画();
+            break;
+          case '色':
+            const matched = 入力実体群[meterType].input.value.match(/([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/i);
+            const [_, DR, DG, DB] = matched || ['', '00', '00', '00'];
+            const realColors = [
+              { C: 'R', V: parseInt(DR, 16) / 255 },
+              { C: 'G', V: parseInt(DG, 16) / 255 },
+              { C: 'B', V: parseInt(DB, 16) / 255 },
+            ].sort((P1, P2) => P2.V - P1.V);
+            strokeColorBalance = realColors[0].V;
+            strokeColorSaturation = 1 - (realColors[2].V / (strokeColorBalance || 1));
+            strokeColorBase = (() => {
+              const P = 1 - (1 - realColors[1].V / (strokeColorBalance || 1)) / (strokeColorSaturation || 1);
+              switch (true) {
+                case realColors[0].C === 'R' && realColors[1].C === 'B':
+                  return 1 / 6 * (0 + P);
+                case realColors[0].C === 'B' && realColors[1].C === 'R':
+                  return 1 / 6 * (2 - P);
+                case realColors[0].C === 'B' && realColors[1].C === 'G':
+                  return 1 / 6 * (2 + P);
+                case realColors[0].C === 'G' && realColors[1].C === 'B':
+                  return 1 / 6 * (4 - P);
+                case realColors[0].C === 'G' && realColors[1].C === 'R':
+                  return 1 / 6 * (4 + P);
+                default:
+                  return 1 / 6 * (6 - P);
+              }
+            })();
+            displayColorBase();
+            displayColorBalance();
+            setColor();
+            break;
+          default:
+        }
+      };
+
+      const set焦点距離 = (event, operate) => {
+        const operatorHandleRect = 焦点距離Operator.getBoundingClientRect();
+        const client = getClientPosition(event);
+        const X = 60 - client.X + operatorHandleRect.left;
+        const Y = 60 - client.Y + operatorHandleRect.top;
+        const R = Math.pow(X * X + Y * Y, 1 / 2);
+        if (R > 50 && operate !== 'move') return;
+        焦点角度 = Math.acos(Y * -1 / R) * (X >= 0 ? 1 : -1);
+        焦点距離率 = Math.min(R / 25, 2);
+
+        display焦点距離();
+        図形設定値定義();
+        描画();
+      };
+
+      const display焦点距離 = () => {
+        const X = Math.sin(焦点角度) * 焦点距離率 * 25;
+        const Y = Math.cos(焦点角度) * 焦点距離率 * -25;
+        焦点距離操作制御.clearRect(0, 0, 120, 120);
+        焦点距離操作制御.setTransform(1, 0, 0, 1, 0, 0);
+        焦点距離操作制御.beginPath();
+        焦点距離操作制御.arc(60 - X, 60 - Y, 5, 0, Math.PI * 2);
+        焦点距離操作制御.closePath();
+        焦点距離操作制御.fill();
+        入力実体群.描画点角度.input.value = Math.round(焦点角度 / Math.PI * 180);
+        入力実体群.描画点距離.input.value = Math.round(焦点距離率 * 100);
+      };
+
+      const initColor = () => {
+        const colors = [
+          '#ff0000',
+          '#ff00ff',
+          '#0000ff',
+          '#00ffff',
+          '#00ff00',
+          '#ffff00',
+        ];
+        colors.forEach((color, i) => {
+          const XS = 55 * i;
+          const XE = 55 * (i + 1);
+          const palet = 基本色表示制御.createLinearGradient(XS, 0, XE, 0);
+          palet.addColorStop(0.0, color);
+          palet.addColorStop(1.0, colors[(i + 1) % 6]);
+          基本色表示制御.fillStyle = palet;
+          基本色表示制御.beginPath();
+          基本色表示制御.rect(XS, 0, XE, 20);
+          基本色表示制御.closePath();
+          基本色表示制御.fill();
+        });
+
+        setColor();
+      };
+
+      const setColorBase = (event, operate) => {
+        const operatorHandleRect = 基本色操作実体.getBoundingClientRect();
+        const client = getClientPosition(event);
+        const X = client.X - operatorHandleRect.left;
+        let P = X / operatorHandleRect.width;
+        if ((P < 0 || P > 1) && operate !== 'move') return;
+        if (P < 0) P = 0;
+        if (P > 1) P = 1;
+
+        strokeColorBase = P;
+
+        setColor();
+        displayColorBase();
+      };
+
+      const setColorBalance = (event, operate) => {
+        const operatorHandleRect = colorBalanceOperator.getBoundingClientRect();
+        const client = getClientPosition(event);
+        const X = client.X - operatorHandleRect.left;
+        const Y = client.Y - operatorHandleRect.top;
+        let PX = X / operatorHandleRect.width;
+        let PY = Y / operatorHandleRect.height;
+        if ((PX < 0 || PX > 1 || PY < 0 || PY > 1) && operate !== 'move') return;
+        if (PX < 0) PX = 0;
+        if (PX > 1) PX = 1;
+        if (PY < 0) PY = 0;
+        if (PY > 1) PY = 1;
+
+        strokeColorSaturation = PX;
+        strokeColorBalance = 1 - PY;
+
+        setColor();
+        displayColorBalance();
+      };
+
+      const setColor = () => {
+        let [R, G, B] = getColorElements();
+        R += (1 - R) * (1 - strokeColorSaturation);
+        G += (1 - G) * (1 - strokeColorSaturation);
+        B += (1 - B) * (1 - strokeColorSaturation);
+        R = Math.floor(R * strokeColorBalance * 255);
+        G = Math.floor(G * strokeColorBalance * 255);
+        B = Math.floor(B * strokeColorBalance * 255);
+        R = (R < 16 ? '0' : '') + R.toString(16);
+        G = (G < 16 ? '0' : '') + G.toString(16);
+        B = (B < 16 ? '0' : '') + B.toString(16);
+
+        strokeColor = `${R}${G}${B}`;
+        入力実体群.色.input.value = strokeColor;
+      };
+
+      const displayColorBase = () => {
+        基本色操作制御.clearRect(0, 0, 330, 20);
+        基本色操作制御.setTransform(1, 0, 0, 1, 0, 0);
+        基本色操作制御.beginPath();
+        基本色操作制御.moveTo(330 * strokeColorBase, 0);
+        基本色操作制御.lineTo(330 * strokeColorBase, 20);
+        基本色操作制御.closePath();
+        基本色操作制御.stroke();
+        基本色操作制御.beginPath();
+        基本色操作制御.moveTo(330 * strokeColorBase - 5, 8);
+        基本色操作制御.lineTo(330 * strokeColorBase - 5, 12);
+        基本色操作制御.lineTo(330 * strokeColorBase - 2, 10);
+        基本色操作制御.closePath();
+        基本色操作制御.fill();
+        基本色操作制御.beginPath();
+        基本色操作制御.moveTo(330 * strokeColorBase + 5, 8);
+        基本色操作制御.lineTo(330 * strokeColorBase + 5, 12);
+        基本色操作制御.lineTo(330 * strokeColorBase + 2, 10);
+        基本色操作制御.closePath();
+        基本色操作制御.fill();
+
+        const [R, G, B] = getColorElements();
+
+        const paletC = colorBalanceScreenContext.createLinearGradient(0, 0, 330, 0);
+        paletC.addColorStop(0.0, '#ffffff');
+        paletC.addColorStop(1.0, `rgb(${Math.floor(R * 255)}, ${Math.floor(G * 255)}, ${Math.floor(B * 255)})`);
+        colorBalanceScreenContext.clearRect(0, 0, 330, 70);
+        colorBalanceScreenContext.setTransform(1, 0, 0, 1, 0, 0);
+        colorBalanceScreenContext.fillStyle = paletC;
+        colorBalanceScreenContext.beginPath();
+        colorBalanceScreenContext.rect(0, 0, 330, 70);
+        colorBalanceScreenContext.closePath();
+        colorBalanceScreenContext.fill();
+        const paletT = colorBalanceScreenContext.createLinearGradient(0, 0, 0, 70);
+        paletT.addColorStop(0.0, '#00000000');
+        paletT.addColorStop(1.0, '#000000ff');
+        colorBalanceScreenContext.fillStyle = paletT;
+        colorBalanceScreenContext.beginPath();
+        colorBalanceScreenContext.rect(0, 0, 330, 70);
+        colorBalanceScreenContext.closePath();
+        colorBalanceScreenContext.fill();
+      };
+
+      const displayColorBalance = () => {
+        colorBalanceOperatorContext.clearRect(0, 0, 330, 70);
+        colorBalanceOperatorContext.setTransform(1, 0, 0, 1, 0, 0);
+        colorBalanceOperatorContext.beginPath();
+        colorBalanceOperatorContext.arc(330 * strokeColorSaturation, 70 * (1 - strokeColorBalance), 7, 0, Math.PI * 2);
+        colorBalanceOperatorContext.closePath();
+        colorBalanceOperatorContext.stroke();
+      };
+
+      const getColorElements = () => {
+        const PB = strokeColorBase * 6 - Math.floor(strokeColorBase * 6);
+
+        switch (Math.floor(strokeColorBase * 6)) {
+          case 0:
+            return [1, 0, PB];
+          case 1:
+            return [1 - PB, 0, 1];
+          case 2:
+            return [0, PB, 1];
+          case 3:
+            return [0, 1, 1 - PB];
+          case 4:
+            return [PB, 1, 0];
+          default:
+            return [1, 1 - PB, 0];
+        }
+      };
+
+      const getClientPosition = (event) => ({
+        X: event.clientX !== undefined ? event.clientX : event.changedTouches[0].clientX,
+        Y: event.clientY !== undefined ? event.clientY : event.changedTouches[0].clientY,
+      });
+
+      const 素因数分解 = (分子, 分母, 指数 = 0) => 分子 % 分母 ? [分子, 指数] : 素因数分解(分子 / 分母, 分母, 指数 + 1);
+
+      const set回転回数 = () => {
+        const 関連図形群 = 図形群[1].方向 ? 図形群 : [図形群[0], 図形群[2]];
+        const 公倍数群 = 関連図形群.reduce((群, { 角数 }) => {
+          try {
+            Array(角数 - 1).fill(null).reduce((分子, _, 分母係数) => {
+              const [残数, 指数] = 素因数分解(分子, 分母係数 + 2);
+              if (指数) {
+                群[分母係数 + 2] = Math.max(群[分母係数 + 2] ?? 0, 指数);
+              }
+              if ((分母係数 + 2) * 2 > 残数) {
+                if (残数 > 1) {
+                  群[残数] = Math.max(群[残数] ?? 0, 1);
+                }
+                throw null;
+              }
+
+              return 残数;
+            }, 角数);
+          } catch (_) {
+          }
+
+          return 群;
+        }, {});
+        必要回転回数 = Object.keys(公倍数群).reduce((値, 係数) => 値 * Math.pow(係数, 公倍数群[係数]), 1);
+        // counterAnnouncer.innerText = `0 / ${必要回転回数 * 回転進捗分割数}`;
+        counterAnnouncer.innerText = `${必要回転回数 * 回転進捗分割数} (${Math.ceil(必要回転回数 * 回転進捗分割数 * 単位実行時間 / 10) / 100}秒)`;
+      }
+
+      const startExecution = () => {
+        startedSwitch = true;
+        startAnimation();
+        Object.keys(調整実体群).forEach((meterKey) => {
+          入力実体群[meterKey].input.disabled = true;
+          入力実体群[meterKey].submit.disabled = true;
+        });
+        executeButton.disabled = true;
+        pauseButton.innerText = '停止';
+        pauseButton.disabled = false;
+        deleteButton.disabled = false;
+        counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
+        counterAnnouncer.innerText = `0 / ${必要回転回数 * 回転進捗分割数}`;
+      };
+
+      const endExecution = () => {
+        startedSwitch = false;
+        stopAnimation();
+        auxiliaryContext.setTransform(1, 0, 0, 1, 0, 0);
+        auxiliaryContext.clearRect(0, 0, 表示枠幅, 表示枠幅);
+        描画制御.回転段階 = 0;
+        描画制御.回転進捗 = 0;
+        描画制御.前回座標 = null;
+        Object.keys(調整実体群).forEach((meterKey) => {
+          入力実体群[meterKey].input.disabled = false;
+          入力実体群[meterKey].submit.disabled = false;
+        });
+        executeButton.disabled = false;
+        pauseButton.disabled = true;
+      };
+
+      const pause = () => {
+        if (!描画制御.動作指示) {
+          startAnimation();
+          pauseButton.innerText = '停止';
+        } else {
+          stopAnimation();
+          pauseButton.innerText = '再開';
+        }
+      };
+
+      const deleteExecution = () => {
+        endExecution();
+        displayContext.setTransform(1, 0, 0, 1, 0, 0);
+        displayContext.clearRect(0, 0, 表示枠幅, 表示枠幅);
+        描画();
+        pauseButton.disabled = true;
+        deleteButton.disabled = true;
+        counterGaugeContext.clearRect(0, 0, 表示枠幅, gaugeHeight);
+        counterAnnouncer.innerText = `0 / ${必要回転回数 * 回転進捗分割数}`;
+      };
+
+      document.onkeydown = (event) => {
+        if (event.code !== 'Enter') return;
+        if (document.activeElement.tagName === 'INPUT') {
+          const elementId = document.activeElement.id;
+          if (Object.keys(入力実体群).includes(elementId)) {
+            submitMeter(elementId);
+          }
+        } else if (!startedSwitch && !描画制御.動作指示) {
+          startExecution();
+        } else {
+          pause();
+        }
+      };
+
+      Object.keys(入力実体群).forEach((meterKey) => {
+        if (調整実体群[meterKey]) {
+          調整実体群[meterKey].meter.onpointerdown = (event) => {
+            setMeterSwitch(meterKey, getClientPosition(event).X);
+          };
+        }
+        入力実体群[meterKey].submit.onclick = () => submitMeter(meterKey);
+      });
+
+      角数指定実体群.forEach((角数指定実体, 担当) => {
+        角数指定実体.addEventListener('change', (現象) => {
+          図形群[担当].角数 = parseInt(角数指定実体.value);
+          図形設定値定義();
+          描画();
+        });
+      });
+
+      密度指定実体群.forEach((密度指定実体, 担当) => {
+        密度指定実体.addEventListener('change', (現象) => {
+          図形群[担当].密度 = parseInt(密度指定実体.value);
+          図形設定値定義();
+          描画();
+        });
+      });
+
+      const documentMousemove = (event) => {
+        switch (meterSwitch) {
+          case 'focal-length':
+            if (描画制御.動作指示 || !meterSwitch) return;
+            set焦点距離(event, 'move');
+            break;
+          case 'color-base':
+            setColorBase(event, 'move');
+            break;
+          case 'color-balance':
+            setColorBalance(event, 'move');
+            break;
+          default:
+            if (描画制御.動作指示 || !meterSwitch) return;
+            const { X } = getClientPosition(event);
+            setMeterLength(meterSwitch, X);
+        }
+      };
+
+      document.onpointerup = (event) => {
+        setMeterSwitch(false);
+      };
+
+      const 表示環境指定 = (指定) => {
+        表示環境 = [1, 2].includes(指定) ? 指定 : 1;
+        表示統括枠実体.dataset.環境 = 表示環境;
+      };
+
+      内外指定統括実体群.forEach((内外指定統括実体, 担当係数) => {
+        内外指定統括実体.querySelectorAll('div').forEach((内外指定実体) => {
+          const 内外指定 = parseInt(内外指定実体.dataset.値);
+          内外指定実体.addEventListener('click', () => {
+            図形群[担当係数 + 1].方向 = 内外指定;
+            内外指定統括実体.dataset.内外 = `${内外指定}`;
+            図形設定値定義();
+            描画();
+          });
+        });
+      });
+
+      if (typeof document.ontouchmove === 'object') {
+        document.ontouchmove = documentMousemove;
+      } else {
+        document.onmousemove = documentMousemove;
+      }
+
+      executeButton.onclick = () => {
+        if (描画制御.動作指示) return;
+        startExecution();
+      };
+
+      pauseButton.onclick = () => {
+        pause();
+      }
+
+      deleteButton.onclick = () => {
+        deleteExecution();
+      };
+
+      焦点距離Operator.onmousedown = (event) => {
+        if (描画制御.動作指示 || meterSwitch) return;
+        meterSwitch = 'focal-length';
+        set焦点距離(event, 'set');
+      };
+
+      基本色操作実体.onmousedown = (event) => {
+        if (meterSwitch) return;
+        meterSwitch = 'color-base';
+        setColorBase(event, 'set');
+      };
+
+      colorBalanceOperator.onmousedown = (event) => {
+        if (meterSwitch) return;
+        meterSwitch = 'color-balance';
+        setColorBalance(event, 'set');
+      };
+
+      form.onsubmit = () => false;
+
+      図形設定値定義();
+      setMeterPosition('辺長', (設定.辺長 - 辺長下限) / (辺長上限 - 辺長下限));
+      入力実体群.辺長.input.value = 設定.辺長;
+      角数指定実体群[0].value = 図形群[0].角数;
+      角数指定実体群[1].value = 図形群[1].角数;
+      角数指定実体群[2].value = 図形群[2].角数;
+      密度指定実体群[0].value = 図形群[0].密度;
+      密度指定実体群[1].value = 図形群[1].密度;
+      密度指定実体群[2].value = 図形群[2].密度;
+      内外指定統括実体群.forEach((内外指定統括実体, 担当係数) => {
+        内外指定統括実体.dataset.内外 = `${図形群[担当係数 + 1].方向}`;
+      });
+      display焦点距離();
+      initColor();
+      displayColorBase();
+      displayColorBalance();
+      pauseButton.disabled = true;
+      deleteButton.disabled = true;
+      描画();
+    </script>
+  </body>
+</html>
